@@ -1,3 +1,7 @@
+#Quantitative Genetics MSc Tutorial 2
+#Practicing application of important concepts and equations
+#Written by John McAuley 30/9/2019 University of Edinburgh
+
 #Question 1-------------------
 
 q2 <- 130/(130+300+180)
