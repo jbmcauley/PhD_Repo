@@ -58,14 +58,6 @@ adultmorph %>%
   xlab("\nMass (g)")+
   ggtitle("Histogram of Mass")
 
-#Exploartion of the Mass of Individuals at various ages and differing Sex
-(graph <- ggplot(adultmorph, aes(age, mass)) +
-    geom_boxplot(aes(fill = sex))+
-    theme_bw()+ 
-    ylab("Mass of individual\n")+
-    xlab("\nAge"))
-
-
 #Visualization of the distribution of mean values from
 #multiple measures of the same individuals for multiple
 adultmorph.means <- aggregate(adultmorph[,12:16],list(adultmorph$ringnr), mean)
@@ -115,6 +107,13 @@ adultmorph.means %>%
   xlab("\nMass (g)")+
   ggtitle("Histogram of Mean Mass")
 
+
+#Exploartion of the Mass of Individuals at various ages and differing Sex
+(graph <- ggplot(adultmorph, aes(age, mass)) +
+    geom_boxplot(aes(fill = sex))+
+    theme_bw()+ 
+    ylab("Mass of individual\n")+
+    xlab("\nAge"))
 
 
 adultmorph %>% 
