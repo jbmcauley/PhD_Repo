@@ -2,33 +2,33 @@ library(GenABEL)
 
 dir()
 
-system("plink --file Pdo_200k_n3960_21032017 --horse --make-bed --out Pdo_200k_n3960_21032017")
+system("plink --file Helgeland_01_2018 --autosome-num 32 --make-bed --out Helgeland_01_2018")
 
 
-famfile <- read.table("Pdo_200k_n3960_21032017.fam", stringsAsFactors = F)
+famfile <- read.table("Helgeland_01_2018.fam", stringsAsFactors = F)
 famfile <- famfile[,2:5]
 names(famfile) <- c("id", "Father", "Mother", "sex")
 
 
-write.table(famfile, "Pdo_200k_n3960_21032017.phe", row.names = F, sep = "\t", quote = F)
+write.table(famfile, "Helgeland_01_2018.phe", row.names = F, sep = "\t", quote = F)
 
 #~~ Create map file
 
-mapfile <- read.table("Pdo_200k_n3960_21032017.map")
+mapfile <- read.table("Helgeland_01_2018.map")
 head(mapfile)
-write.table(mapfile[,c(1, 2, 4)], "Pdo_200k_n3960_21032017.genabelmap", row.names = F, col.names = F, quote = F, sep = "\t")
+write.table(mapfile[,c(1, 2, 4)], "Helgeland_01_2018.genabelmap", row.names = F, col.names = F, quote = F, sep = "\t")
 
 #~~ Make GenAbel files
 
-convert.snp.ped(pedfile = "Pdo_200k_n3960_21032017.ped", 
-                mapfile = "Pdo_200k_n3960_21032017.genabelmap",
-                outfile = "Pdo_200k_n3960_21032017.genabel",
+convert.snp.ped(pedfile = "Helgeland_01_2018.ped", 
+                mapfile = "Helgeland_01_2018.genabelmap",
+                outfile = "Helgeland_01_2018.genabel",
                 strand = "u", bcast = 10000, traits = 1, mapHasHeaderLine = F)
 
 ###### PROBLEM HERE - FIX WITH LETTERS????
 
-sparrowgen <- load.gwaa.data(phenofile = "Pdo_200k_n3960_21032017.phe",
-                             genofile  = "Pdo_200k_n3960_21032017.genabel")
+sparrowgen.Helgeland <- load.gwaa.data(phenofile = "Helgeland_01_2018.phe",
+                             genofile  = "Helgeland_01_2018.genabel")
 
 
 
