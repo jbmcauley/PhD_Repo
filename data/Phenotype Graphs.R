@@ -1,9 +1,13 @@
 #Phenotype Visualization
 #John McAuley
 
-
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
+library(ggpubr)
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
+dir()
+
 
 adultmorph <- read.csv("AdultMorphology-pre4_SJ.csv")
 phenodata <- read.csv(("SNPtypedind_PhenotypicData.csv"))
@@ -13,14 +17,14 @@ adultmorph$age <- as.factor(adultmorph$age)
 summary(adultmorph)
 
 #Histograms for each phenotypic data variable
-adultmorph %>% 
+ggarrange(adultmorph %>% 
 ggplot(aes(x = tarsus)) +
   geom_histogram(aes(y=..density..),bins = 51,colour = "darkgrey", fill = "white") +
   geom_density(colour = "blue")+
   theme_bw() +
   ylab("Frequency\n")+
   xlab("\nTarsus Length (mm)")+
- ggtitle("Histogram of Tarsus Length\n")
+ ggtitle("Histogram of Tarsus Length\n"),
 
 adultmorph %>% 
   ggplot(aes(wing)) +
@@ -29,7 +33,7 @@ adultmorph %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nWing length (mm)")+
-  ggtitle("Histogram of Wing Length\n")
+  ggtitle("Histogram of Wing Length\n"),
 
 adultmorph %>% 
   ggplot(aes(billD)) +
@@ -38,7 +42,7 @@ adultmorph %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nBill Depth (mm)")+
-  ggtitle("Histogram of Bill Depth")
+  ggtitle("Histogram of Bill Depth"),
 
 adultmorph %>% 
   ggplot(aes(billL)) +
@@ -47,7 +51,7 @@ adultmorph %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nBill Length (mm)")+
-  ggtitle("Histogram of Bill Length")
+  ggtitle("Histogram of Bill Length"),
 
 adultmorph %>% 
   ggplot(aes(mass)) +
@@ -56,20 +60,20 @@ adultmorph %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nMass (g)")+
-  ggtitle("Histogram of Mass")
+  ggtitle("Histogram of Mass"))
 
 #Visualization of the distribution of mean values from
 #multiple measures of the same individuals for multiple
 adultmorph.means <- aggregate(adultmorph[,12:16],list(adultmorph$ringnr), mean)
 
-adultmorph.means %>% 
+ggarrange(adultmorph.means %>% 
   ggplot(aes(x = tarsus)) +
   geom_histogram(aes(y=..density..),bins = 51,colour = "darkgrey", fill = "white") +
   geom_density(colour = "blue")+
   theme_bw() +
   ylab("Frequency\n")+
   xlab("\nTarsus Length (mm)")+
-  ggtitle("Histogram of Mean Tarsus Length\n")
+  ggtitle("Histogram of Mean Tarsus Length\n"),
 
 adultmorph.means %>% 
   ggplot(aes(wing)) +
@@ -78,7 +82,7 @@ adultmorph.means %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nWing length (mm)")+
-  ggtitle("Histogram of Mean Wing Length\n")
+  ggtitle("Histogram of Mean Wing Length\n"),
 
 adultmorph.means %>% 
   ggplot(aes(billD)) +
@@ -87,7 +91,7 @@ adultmorph.means %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nBill Depth (mm)")+
-  ggtitle("Histogram of Mean Bill Depth")
+  ggtitle("Histogram of Mean Bill Depth"),
 
 adultmorph.means %>% 
   ggplot(aes(billL)) +
@@ -96,7 +100,7 @@ adultmorph.means %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nBill Length (mm)")+
-  ggtitle("Histogram of Mean Bill Length")
+  ggtitle("Histogram of Mean Bill Length"),
 
 adultmorph.means %>% 
   ggplot(aes(mass)) +
@@ -105,7 +109,7 @@ adultmorph.means %>%
   theme_bw()+
   ylab("Frequency\n")+
   xlab("\nMass (g)")+
-  ggtitle("Histogram of Mean Mass")
+  ggtitle("Histogram of Mean Mass"))
 
 
 #Exploartion of the Mass of Individuals at various ages and differing Sex

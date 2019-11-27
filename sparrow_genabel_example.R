@@ -1,8 +1,7 @@
+rm(list=ls())
 library(GenABEL)
-
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 dir()
-
-system("plink --file Helgeland_01_2018 --autosome-num 32 --make-bed --out Helgeland_01_2018")
 
 
 famfile <- read.table("Helgeland_01_2018.fam", stringsAsFactors = F)
@@ -17,7 +16,8 @@ write.table(famfile, "Helgeland_01_2018.phe", row.names = F, sep = "\t", quote =
 mapfile <- read.table("Helgeland_01_2018.map")
 head(mapfile)
 write.table(mapfile[,c(1, 2, 4)], "Helgeland_01_2018.genabelmap", row.names = F, col.names = F, quote = F, sep = "\t")
-
+table.check <- read.table("Helgeland_01_2018.genabelmap")
+rm(list=ls())
 #~~ Make GenAbel files
 
 convert.snp.ped(pedfile = "Helgeland_01_2018.ped", 
@@ -32,6 +32,6 @@ sparrowgen.Helgeland <- load.gwaa.data(phenofile = "Helgeland_01_2018.phe",
 
 
 
-save(sparrowgen, file = "sparrowgen.RData")
+save(sparrowgen.Helgeland, file = "sparrowgen_Helgeland_01_2018.RData")
 
 
