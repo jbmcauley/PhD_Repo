@@ -64,18 +64,29 @@ load("deer.RData")
 x<-unique(cbind(c(unique(deer.ped$ANIMAL), unique(deer.ped$FATHER), unique(deer.ped$MOTHER))))
 x <- x[x!= 0]
 x <- as.data.frame(x)
-
-y <- list()
+row.names(deer.ped) <- NULL
+FAMILY <- list()
 counter <- 0
+
 if(any((deer.ped$ANIMAL %in% deer.ped$MOTHER)|(deer.ped$ANIMAL %in% deer.ped$FATHER))){
-  mothers <- which(deer.ped$ANIMAL %in% deer.ped$MOTHER)
-  fathers <- which(deer.ped$ANIMAL %in% deer.ped$FATHER)
-  idfathers <- deer.ped$ANIMAL[fathers]
-  idmothers <- deer.ped$ANIMAL[mothers]
+  for(i in 1:14){
+    if(deer.ped$MOTHER[i] != 0){                                                                           #condition 1; ind has a mother
+      if(deer.ped$MOTHER[deer.ped$ANIMAL == deer.ped$MOTHER[i]] != 0){                                     #condition 2; ind's mother has a mother
+       if(deer.ped$MOTHER[deer.ped$ANIMAL ==deer.ped$MOTHER[deer.ped$ANIMAL == deer.ped$MOTHER[i]]] != 0){ #condition 3; ind's grandmother has a mother
+      print("Another Line Needed")
+         break } # <- insert code for If all 3 condtions pass
+        counter <- counter + 1
+        focalind <- deer.ped[i,1:3]
+        FAMILY[[counter]] <- c(focalind,  } # <- code for if 1&2 pass, but 3 fails; assigns grandchild as family code
+            if(any(deer.ped$ANIMAL[i] %in% deer.ped$MOTHER)){
+              deer.ped$FAMILY[i]
+            }} #<- if 1 passes, but 2&3 fail
+    else {
+        }
+          } #close loop
+            } #Close original if
   
   
-  deer.ped$FAMILY <-
-}
 
 deer.ped$ANIMAL[deer.ped$FATHER %in% idfathers]
 
@@ -85,31 +96,10 @@ deer.ped$FAMILY <- NULL
 
 y <- do.call(rbind, y)
 
-#==========================
-ped <- deer.ped
-if(any(!ped$MOTHER %in% ped$ANIMAL)){
-  ped <- rbind(data.frame(ANIMAL = ped$MOTHER[which(!ped$MOTHER %in% ped$ANIMAL)],
-                          MOTHER = 0, FATHER = 0,
-                          stringsAsFactors = F),
-               ped)
-}
-
-if(any(!ped$FATHER %in% ped$ANIMAL)){
-  ped <- rbind(data.frame(ANIMAL = ped$FATHER[which(!ped$FATHER %in% ped$ANIMAL)],
-                          MOTHER = 0, FATHER = 0,
-                          stringsAsFactors = F),
-               ped)
-}
+#========================== Father/Mother Pairs
 
 
-z<-rbind(deer.ped,
-data.frame(ANIMAL = ped$MOTHER[which(ped$MOTHER %in% ped$ANIMAL)],
-            MOTHER = 0, FATHER = 0,
-            stringsAsFactors = F),
-
-data.frame(ANIMAL = ped$FATHER[which(ped$FATHER %in% ped$ANIMAL)],
-           MOTHER = 0, FATHER = 0,
-           stringsAsFactors = F)
-)
+op.pair <- melt(deer.ped, id = "ANIMAL")
+op.pair <- op.pair[op.pair$value != 0,]
 
 
