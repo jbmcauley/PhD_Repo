@@ -88,18 +88,40 @@ if(any((deer.ped$ANIMAL %in% deer.ped$MOTHER)|(deer.ped$ANIMAL %in% deer.ped$FAT
   
   
 
-deer.ped$ANIMAL[deer.ped$FATHER %in% idfathers]
-
-
-deer.ped$ANIMAL[nonfathers]
-deer.ped$FAMILY <- NULL
-
-y <- do.call(rbind, y)
-
 #========================== Father/Mother Pairs
+19:22
+25:28
+op.pair.zeros <- melt(deer.ped, id = "ANIMAL")
+#op.pair.zeros <- unique(op.pair.zeros)
+#op.pair <- op.pair.zeros[op.pair.zeros$value != 0,]
+#op.pair.zeros <- op.pair.zeros[!duplicated(t(apply(op.pair.zeros[c("ANIMAL","value")],1,sort))),]
+row.names(op.pair.zeros) <- NULL
+names(op.pair.zeros) <- c("FID", "Parent", "PID")
 
+MOTHERS <- vector()
+FATHERS <- vector()
+for(i in 1:28){
+  MOTHERS[i] <- deer.ped$MOTHER[deer.ped$ANIMAL == op.pair.zeros[i,1]]
+  FATHERS[i] <- deer.ped$FATHER[deer.ped$ANIMAL == op.pair.zeros[i,1]]
+}
+op.pair.zeros$FATHER <- FATHERS
+op.pair.zeros$MOTHER <- MOTHERS
+op.pair.zeros$Parent <- NULL
+op.pair.zeros$PID <- NULL
 
-op.pair <- melt(deer.ped, id = "ANIMAL")
-op.pair <- op.pair[op.pair$value != 0,]
+table(deer.famped$ANIMAL)
+table(op.pair.zeros$ANIMAL)
 
+GRANDMOTHERS <- vector()
+GRANDFATHERS <- vector()
+for(i in 1:28){
+  if(deer.ped$MOTHER[op.pair.zeros$FID == op.pair.zeros[i,1]][1] > 0){
+  GRANDMOTHERS[i] <- deer.ped$MOTHER[deer.ped$ANIMAL == deer.ped$MOTHER[deer.ped$ANIMAL == op.pair.zeros[i,1]]]
+  GRANDFATHERS[i] <- deer.ped$FATHER[deer.ped$ANIMAL == deer.ped$FATHER[deer.ped$ANIMAL == op.pair.zeros[i,1]]]
+  } else {
+  GRANDMOTHERS[i] <- 0
+  GRANDFATHERS[i] <- 0}
+}
+op.pair.zeros$GRANDFATHER <- GRANDFATHERS
+op.pair.zeros$GRANDMOTHER <- GRANDMOTHERS
 
