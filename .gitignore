@@ -20,5 +20,10 @@ PhD_Repo.Rproj
 #*README_files/
 PLINK-files 200k SNP-data
 Helgeland_01_2018.log
+<<<<<<< HEAD
 AdultMorphology-pre4_SJ.csv
 SNPtypedind_PhenotypicData.csv
+=======
+Cri_Map
+Hagen et al
+>>>>>>> ea2994ab5b09a24dfa0fea1dc583d899c2e393d0
