@@ -88,9 +88,10 @@ if(any((deer.ped$ANIMAL %in% deer.ped$MOTHER)|(deer.ped$ANIMAL %in% deer.ped$FAT
   
   
 
-#========================== Father/Mother Pairs
-19:22
-25:28
+#========================== Father/Mother Pairs====
+setwd("C:/Users/s1945757/PhD_Repo/Cri_Map/crimaptools-master/crimaptools-master/data")
+load("deer.RData")
+library(reshape2)
 op.pair.zeros <- melt(deer.ped, id = "ANIMAL")
 #op.pair.zeros <- unique(op.pair.zeros)
 #op.pair <- op.pair.zeros[op.pair.zeros$value != 0,]
@@ -124,4 +125,18 @@ for(i in 1:28){
 }
 op.pair.zeros$GRANDFATHER <- GRANDFATHERS
 op.pair.zeros$GRANDMOTHER <- GRANDMOTHERS
+op.pair.zeros <- op.pair.zeros[1:14,]
+
+y <- list()
+counter <- 0
+op.pair.zeros$FamilyID[] <- NA
+for(i in 1:28){
+  if(any(op.pair.zeros$FID[i] %in% op.pair.zeros$FATHER | op.pair.zeros$FID[i] %in% op.pair.zeros$MOTHER | op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER | op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDMOTHER) == TRUE){
+    
+  } else {
+    counter <- counter + 1
+    FamilyID <- op.pair.zeros$FID[i]
+    op.pair.zeros$FamilyID[i] <- FamilyID
+  }
+}
 
