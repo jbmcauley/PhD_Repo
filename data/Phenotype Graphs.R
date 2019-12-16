@@ -8,7 +8,6 @@ library(ggpubr)
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 dir()
 
-
 adultmorph <- read.csv("AdultMorphology-pre4_SJ.csv")
 phenodata <- read.csv(("SNPtypedind_PhenotypicData.csv"))
 adultmorph$sex <- as.factor(adultmorph$sex)
