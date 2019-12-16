@@ -28,7 +28,6 @@ names(Ped) <- c("id", "mother", "father", "sex")
 #Ped <- Ped[complete.cases(Ped[,4]),]
 Ped$sex <- as.numeric(Ped$sex)
 
-
 #========================= Grouping Siblings:====
 
 fam = apply(Ped[2:3], 1, function(x) paste0(sort(x), collapse=" "))
@@ -88,8 +87,8 @@ if(any((deer.ped$ANIMAL %in% deer.ped$MOTHER)|(deer.ped$ANIMAL %in% deer.ped$FAT
   
   
 
-#========================== Father/Mother Pairs====
-setwd("C:/Users/s1945757/PhD_Repo/Cri_Map/crimaptools-master/crimaptools-master/data")
+#========================== Father/Mother + Offspring Pairs====
+setwd("C:/Users/johnb/Downloads/crimaptools-master/crimaptools-master/data")
 load("deer.RData")
 library(reshape2)
 op.pair.zeros <- melt(deer.ped, id = "ANIMAL")
@@ -130,13 +129,50 @@ op.pair.zeros <- op.pair.zeros[1:14,]
 y <- list()
 counter <- 0
 op.pair.zeros$FamilyID[] <- NA
-for(i in 1:28){
-  if(any(op.pair.zeros$FID[i] %in% op.pair.zeros$FATHER | op.pair.zeros$FID[i] %in% op.pair.zeros$MOTHER | op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER | op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDMOTHER) == TRUE){
-    
-  } else {
-    counter <- counter + 1
+
+for(i in 1:14){
+  if(any(op.pair.zeros$FID[i] %in% op.pair.zeros$FATHER | 
+         op.pair.zeros$FID[i] %in% op.pair.zeros$MOTHER | 
+         op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER | 
+         op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDMOTHER) == TRUE){
+    if(op.pair.zeros$FID[i] %in% op.pair.zeros$FATHER){
+        if(op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER){
+          for (j in which(op.pair.zeros$GRANDFATHER == op.pair.zeros$FID[i])){
+          if(op.pair.zeros$FID[j] %in% op.pair.zeros$FATHER){  
+            #Restarts the process until the first link in OP chain established
+            #Somewhat of a repeat of the chain, dangerously never ending? Need to spend time
+            #mulling this over
+          }else{
+            op.pair.zeros$FamilyID[i] <- NA
+            addgroup <- op.pair.zeros[j,]
+            addgroup$FamilyID <- addgroup$FID
+            row.names(addgroup) <- NULL
+            counter <- counter + 1
+            y[[counter]] <- cbind(op.pair.zeros, addgroup)
+          }}
+        }else{} #If the individual is only a father and not also a grandfather
+    }
+    if(op.pair.zeros$FID[i] %in% op.pair.zeros$MOTHER){
+      if(op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDMOTHER){
+        for (k in which(op.pair.zeros$GRANDMOTHER == op.pair.zeros$FID[i])){
+          if(op.pair.zeros$FID[k] %in% op.pair.zeros$MOTHER){  
+            #Mullover portion again
+            }else{
+            op.pair.zeros$FamilyID[i] <- NA
+            addgroup <- op.pair.zeros[k,]
+            addgroup$FamilyID <- addgroup$FID
+            row.names(addgroup) <- NULL
+            counter <- counter + 1
+            y[[counter]] <- cbind(op.pair.zeros, addgroup)
+          }}
+      }else{} #If the individual is only a mother and not also a grandmother
+    }
+    }else{
     FamilyID <- op.pair.zeros$FID[i]
     op.pair.zeros$FamilyID[i] <- FamilyID
   }
 }
+
+#Remove all rows for which FAMILYID is NA
+
 
