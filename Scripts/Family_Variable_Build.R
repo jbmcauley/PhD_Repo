@@ -69,7 +69,8 @@ for(i in 1:14){
     }
     #Moms (Exactly the same as for Dads but alternate column)
     else{
-      op.pair$ANIMAL[which(op.pair$MOTHER == op.pair$ANIMAL[i])]
+      Offspringvec <- op.pair$ANIMAL[which(op.pair$MOTHER == op.pair$ANIMAL[i])]
+      if(any(Offspringvec))
     }
   }
   #Not a parent: Simply assign fam var once
@@ -77,7 +78,8 @@ for(i in 1:14){
     counter <- counter + 1
     looplist[[counter]] <- paste("Offspring_Mum", as.character(op.pair$ANIMAL[i]), sep = "_")
   }
-  
-}#Close "for" loop
+
+#Close "for" loop  
+}
 
 
