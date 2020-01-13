@@ -51,3 +51,33 @@ row.names(op.pair.zeros) <- NULL
 
 #Wide Format
 op.pair <- dcast(op.pair.zeros, ANIMAL ~ variable, value.var = "value")
+
+op.pair$Family.Interaction <- interaction(op.pair$MOTHER, op.pair$FATHER)
+
+grep(op.pair$ANIMAL[12], op.pair$MOTHER)
+
+
+#-----Build Fam Group: Off-Parent----
+looplist <- list()
+counter <- 0
+for(i in 1:14){
+  #If ind i is a parent
+  if(any(op.pair$FATHER == op.pair$ANIMAL[i]) | any(op.pair$MOTHER == op.pair$ANIMAL[i])){
+    #Dads
+    if(any(op.pair$FATHER == op.pair$ANIMAL[i])){
+      
+    }
+    #Moms (Exactly the same as for Dads but alternate column)
+    else{
+      op.pair$ANIMAL[which(op.pair$MOTHER == op.pair$ANIMAL[i])]
+    }
+  }
+  #Not a parent: Simply assign fam var once
+  else{
+    counter <- counter + 1
+    looplist[[counter]] <- paste("Offspring_Mum", as.character(op.pair$ANIMAL[i]), sep = "_")
+  }
+  
+}#Close "for" loop
+
+
