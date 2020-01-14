@@ -11,13 +11,16 @@ GPa <- op.pair.zeros[1:14,]
 GMa <- op.pair.zeros[15:28,]
 
 
-#-----Grandfather Setup----
+#-----Maternal Grandfather Setup----
 PGrand <- list()
 counter <- 0
 for (i in 1:14) {
   counter <- counter +1
-  PGrand[[counter]] <- GPa$value[which(GPa$ANIMAL ==GPa$value[i])]
-  }
+  if(op.pair$MOTHER[i] != 0){
+    PGrand[[counter]] <- op.pair$FATHER[which(op.pair$ANIMAL == op.pair$MOTHER[i])]
+  }else{PGrand[[counter]] <- 0} #Ind not a mother therefore the maternal Grandfather is unknown
+}
+
 idx <- !(sapply(PGrand, length))
 PGrand[idx] <- 0
 PGrand <- do.call(rbind, PGrand)
@@ -40,9 +43,8 @@ GMa$MGrand <- MGrand
 op.pair.zeros <- rbind(GPa, GMa)
 
 #-----Rebuild .ped-----
-deer.ped$MGrand <- MGrand
-deer.ped$PGrand <- PGrand
-
+deer.ped$MGrandM <- MGrand
+deer.ped$MGrandF <- PGrand
 
 #Long Format
 op.pair.zeros <- melt(deer.ped, id = "ANIMAL")
@@ -61,25 +63,47 @@ grep(op.pair$ANIMAL[12], op.pair$MOTHER)
 looplist <- list()
 counter <- 0
 for(i in 1:14){
-  #If ind i is a parent
+ 
+   #If ind i is a parent
   if(any(op.pair$FATHER == op.pair$ANIMAL[i]) | any(op.pair$MOTHER == op.pair$ANIMAL[i])){
+    
     #Dads
     if(any(op.pair$FATHER == op.pair$ANIMAL[i])){
       
+      #If ind is a GPa
+      if(any(op.pair$ANIMAL[op.pair$PGrand == op.pair$ANIMAL[i]])){
+       OffspringVector  <- op.pair$ANIMAL[op.pair$PGrand == op.pair$ANIMAL[i]] #vector of offspring *Offspring may be parents!
+
+       #Create row for each offspring/GParent Pairing ***This script does not check if offspring of Gparent are a parent themselves.     
+       for(j in 1:length(OffspringVector)){
+         counter <- counter + 1
+         tempdf <- data.frame(op.pair$ANIMAL[i], op.pair$FATHER[i], op.pair$MOTHER[i], paste("Offspring_Mum", as.character(OffspringVector[j]), sep = "_"))
+         names(tempdf) <- c(names(op.pair)[c(1,2,3)],"Family")
+         looplist[[counter]] <- tempdf
+      }
+      }
+    
+      #Non-Grandparental - Dads
+      else{
+        OffspringVector  <- op.pair$ANIMAL[op.pair$FATHER == op.pair$ANIMAL[i]] #vector of offspring *Offspring may be parents!
+        if(anyOffspringVector == op.pair$MOTHER)
+      }
     }
+    
     #Moms (Exactly the same as for Dads but alternate column)
     else{
       Offspringvec <- op.pair$ANIMAL[which(op.pair$MOTHER == op.pair$ANIMAL[i])]
       if(any(Offspringvec))
     }
   }
+  
   #Not a parent: Simply assign fam var once
   else{
     counter <- counter + 1
     looplist[[counter]] <- paste("Offspring_Mum", as.character(op.pair$ANIMAL[i]), sep = "_")
   }
 
-#Close "for" loop  
+#Close of Starting "for" loop  
 }
 
 
