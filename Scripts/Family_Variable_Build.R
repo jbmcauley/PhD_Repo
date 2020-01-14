@@ -9,8 +9,7 @@ row.names(op.pair.zeros) <- NULL
 
 GPa <- op.pair.zeros[1:14,]
 GMa <- op.pair.zeros[15:28,]
-
-
+rm(v)
 #-----Maternal Grandfather Setup----
 PGrand <- list()
 counter <- 0
@@ -45,6 +44,33 @@ op.pair.zeros <- rbind(GPa, GMa)
 #-----Rebuild .ped-----
 deer.ped$MGrandM <- MGrand
 deer.ped$MGrandF <- PGrand
+df <- dcast(op.pair.zeros, ANIMAL ~ variable, value.var = "value")
+df<- df[complete.cases(df),]
+
+OffspringVec <- df$ANIMAL
+faths <- df$FATHER
+mother <- df$MOTHER
+Mgrandf <- df$MGrandF
+MgrandM <- df$MGrandM
+pedvec <- as.data.frame(c(OffspringVec, df$FATHER, df$MOTHER, df$MGrandM, df$MGrandF))
+names(pedvec) <- "ANIMAL"
+
+FATHER <- vector()
+MOTHER <- vector()
+FAM <- vector()
+counter <- 0
+for(i in 1:length(pedvec$ANIMAL)){
+  counter <- counter + 1
+  FATHER[counter] <- op.pair$FATHER[which(pedvec$ANIMAL[i] == op.pair$ANIMAL)]
+  MOTHER[counter] <- op.pair$MOTHER[which(pedvec$ANIMAL[i] == op.pair$ANIMAL)]
+}
+
+FAM[counter] <- paste("Offspring_Mum", as.character(op.pair$ANIMAL[i]), sep = "_")
+
+pedvec$MOTHER
+pedvec$Family
+paste("Offspring_Mum", as.character(op.pair$ANIMAL[i]), sep = "_")
+
 
 #Long Format
 op.pair.zeros <- melt(deer.ped, id = "ANIMAL")
@@ -105,5 +131,11 @@ for(i in 1:14){
 
 #Close of Starting "for" loop  
 }
+
+
+
+
+
+
 
 
