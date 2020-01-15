@@ -94,27 +94,3 @@ for(i in 1:length(df$MGrandF)){
 FAM[counter] <- paste("Offspring_Mum", as.character(df$ANIMAL[i]), sep = "_")
 }
 pedvec$Family <- FAM
-
-
-#Long Format----
-op.pair.zeros <- melt(deer.ped, id = "ANIMAL")
-op.pair.zeros <- op.pair.zeros[op.pair.zeros[,3] != 0,]
-row.names(op.pair.zeros) <- NULL
-
-#Wide Format----
-op.pair <- dcast(op.pair.zeros, ANIMAL ~ variable, value.var = "value")
-
-op.pair$Family.Interaction <- interaction(op.pair$MOTHER, op.pair$FATHER)
-
-grep(op.pair$ANIMAL[12], op.pair$MOTHER)
-
-
-
-
-
-
-
-
-
-
-
