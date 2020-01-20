@@ -34,6 +34,7 @@ op.pair$Mother <- gsub("F", "4", op.pair$Mother)
 op.pair$id.og <- NULL
 op.pair$Father.og <- NULL
 op.pair$Mother.og <- NULL
+sparrowgen.Helgeland@gtdata@idnames<- as.character(op.pair$id)
 
 names(op.pair) <- c("ANIMAL", "FATHER", "MOTHER")
 op.pair$ANIMAL <- as.numeric(as.character(op.pair$ANIMAL))
@@ -135,3 +136,113 @@ pedvec$Family <- FAM
 length(unique(pedvec$Family))
 
 sparrow.famped <- pedvec
+sparrow.ped <- df
+
+#Tidying----
+rm(df)
+rm(pedvec)
+rm(GPa)
+rm(GMa)
+rm(PGrand)
+rm(MGrand)
+rm(deer.abel)
+rm(deer.ped)
+rm(deer.famped)
+sparrow.ped$MGrandM <- NULL
+sparrow.ped$MGrandF <- NULL
+rm(list = ls.str(mode = 'numeric'))
+rm(list = ls.str(mode = 'logical'))
+rm(list = ls.str(mode = 'character'))
+
+
+#Attempting CryMap with previously created Fam Var----
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
+library(crimaptools)
+library(GenABEL)
+sparrow.abel <- sparrowgen.Helgeland
+rm(sparrowgen.Helgeland)
+rm(op.pair)
+rm(op.pair.zeros)
+getwd()
+any(sparrow.ped$ANIMAL == 	8887335)
+sparrow.famped_backup <- sparrow.famped
+sparrow.ped_backup <- sparrow.ped
+vec <- c(0,0,0)
+sparrow.ped <- rbind(sparrow.ped,vec)
+sparrow.famped <- sparrow.famped[which(sparrow.famped$FATHER %in% sparrow.ped$ANIMAL),]
+sparrow.famped <- sparrow.famped[which(sparrow.famped$MOTHER %in% sparrow.ped$ANIMAL),]
+sparrow.famped <- sparrow.famped[which(sparrow.famped$ANIMAL %in% sparrow.ped$ANIMAL),]
+
+
+
+
+
+create_crimap_input(gwaa.data = sparrow.abel, familyPedigree = sparrow.famped, analysisID = "8a", chr = 8, outdir = "crimap", clear.existing.analysisID = TRUE)
+
+run_crimap_prepare(genfile = "crimap/chr8a.gen", crimap.path = "C:/PathApps/crimap.exe")
+#Function has not produced the .loc .par and .dat files suggested in the tutorial
+#Using the terminal does work following the crimapinput1 preiously created (n,n,n,n,7,y,y) to generate .loc, .par, and .dat files... mention to Susan a potential issue in crimaptools
+#Alternatively the problem is due to miscommunication between R and Path, have had Path issues in past with Plink...
+
+dir("crimap")
+
+parse_mend_err(prefile = "crimap/chr8a.pre", genfile = "crimap/chr8a.gen", familyPedigree = sparrow.famped)
+read.table("crimap/chr8a.mnd", header = T)
+#No Mendelian errors detected, in tutorial "2" are listed... Data already cleaned?
+#Next line only used if mendialian erros are present in order to mask them in the .gen file.
+create_crimap_input (gwaa.data = sparrow.abel, 
+                     familyPedigree = sparrow.famped, 
+                     analysisID = "8a", 
+                     chr = 8, 
+                     outdir = "crimap", 
+                     clear.existing.analysisID = TRUE, 
+                     use.mnd = TRUE)
+
+
+#If mendelian errors detected you will need to rerun the prepare function. Once again, might need to be done in terminal rather than crimap-tools
+run_crimap_prepare(genfile = "crimap/chr8a.gen", crimap.path = "C:/PathApps/crimap.exe") 
+parse_mend_err(prefile = "crimap/chr8a.pre", genfile = "crimap/chr8a.gen", familyPedigree = sparrow.famped)
+dir("crimap")
+#Repeat the process of looking for mendelian error until there are none.
+
+
+#Build a Linkage Map:----
+
+run_crimap_map(genfile = "crimap/chr8a.gen", crimap.path = "C:/PathApps/crimap.exe")
+#.map file generated has size "0 B" This is a sign that something is not working in generation of the file. Will need to work with regular functions 
+#in terminal.
+dir("crimap")
+sparrow.map <- parse_map(mapfile = "crimap/chr8a.map")
+#Produces error, might be an issue with the sex assignments in the sparrow.abel gwaa.data file in some fashion. Needs checking.
+
+
+#Characterizing recombination events:----
+
+run_crimap_chrompic(genfile = "crimap/chr8a.gen", crimap.path =  "C:/PathApps/crimap.exe")
+sparrow.cmpmap <- parse_map_chrompic(chrompicfile = "crimap/chr8a.cmp")
+head(sparrow.cmpmap)
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr8a.cmp", familyPedigree = sparrow.famped)
+sparrow.xovers[1:2,]
+
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+head(sparrow.doubles)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 3], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 3], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 3)), 
+                      analysisID = "3a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+sparrow.xovers.clean
+
+
+
+
