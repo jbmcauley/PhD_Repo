@@ -160,11 +160,14 @@ setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 library(crimaptools)
 library(GenABEL)
 sparrow.abel <- sparrowgen.Helgeland
+sparrow.abel@phdata$Father <- as.character(op.pair$FATHER)
+sparrow.abel@phdata$Mother <- as.character(op.pair$MOTHER)
+
+
 rm(sparrowgen.Helgeland)
 rm(op.pair)
 rm(op.pair.zeros)
 getwd()
-any(sparrow.ped$ANIMAL == 	8887335)
 sparrow.famped_backup <- sparrow.famped
 sparrow.ped_backup <- sparrow.ped
 vec <- c(0,0,0)
@@ -172,8 +175,6 @@ sparrow.ped <- rbind(sparrow.ped,vec)
 sparrow.famped <- sparrow.famped[which(sparrow.famped$FATHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$MOTHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$ANIMAL %in% sparrow.ped$ANIMAL),]
-
-
 
 
 
