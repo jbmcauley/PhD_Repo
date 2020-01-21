@@ -34,7 +34,9 @@ op.pair$Mother <- gsub("F", "4", op.pair$Mother)
 op.pair$id.og <- NULL
 op.pair$Father.og <- NULL
 op.pair$Mother.og <- NULL
-sparrowgen.Helgeland@gtdata@idnames<- as.character(op.pair$id)
+sparrowgen.Helgeland@gtdata@idnames<- as.character(as.numeric(op.pair$id))
+names(sparrowgen.Helgeland@gtdata@male) <- as.character(as.numeric(op.pair$id))
+
 
 names(op.pair) <- c("ANIMAL", "FATHER", "MOTHER")
 op.pair$ANIMAL <- as.numeric(as.character(op.pair$ANIMAL))
@@ -164,8 +166,8 @@ sparrow.abel@phdata$Father <- as.character(op.pair$FATHER)
 sparrow.abel@phdata$Mother <- as.character(op.pair$MOTHER)
 
 
-rm(sparrowgen.Helgeland)
-rm(op.pair)
+#rm(sparrowgen.Helgeland)
+#rm(op.pair)
 rm(op.pair.zeros)
 getwd()
 sparrow.famped_backup <- sparrow.famped
