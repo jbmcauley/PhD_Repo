@@ -139,10 +139,50 @@ length(unique(pedvec$Family))
 
 sparrow.famped <- pedvec
 sparrow.ped <- df
+sparrow.famped <- sparrow.famped[order(sparrow.famped$Family),]
+row.names(sparrow.famped) <- NULL
+
+
+#----Making Father and Grandparent-Parents 0s----
+counter <- 2
+for (i in 1:1474) {
+  
+  sparrow.famped$FATHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 2
+for (i in 1:1474) {
+  
+  sparrow.famped$MOTHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 4
+for (i in 1:1474) {
+  
+  sparrow.famped$FATHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 4
+for (i in 1:1474) {
+  
+  sparrow.famped$MOTHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 5
+for (i in 1:1474) {
+  
+  sparrow.famped$MOTHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 5
+for (i in 1:1474) {
+  
+  sparrow.famped$FATHER[counter] <- 0
+  counter <- counter + 5
+}
 
 #Tidying----
 rm(df)
-rm(pedvec)
 rm(GPa)
 rm(GMa)
 rm(PGrand)
@@ -164,7 +204,9 @@ library(GenABEL)
 sparrow.abel <- sparrowgen.Helgeland
 sparrow.abel@phdata$Father <- as.character(op.pair$FATHER)
 sparrow.abel@phdata$Mother <- as.character(op.pair$MOTHER)
-
+sparrow.abel@phdata$id <- sparrow.abel@gtdata@idnames
+x <- as.data.frame(sparrow.abel@phdata$id)
+x$gtdata <- sparrow.abel@gtdata@idnames
 
 #rm(sparrowgen.Helgeland)
 #rm(op.pair)
@@ -177,8 +219,13 @@ sparrow.ped <- rbind(sparrow.ped,vec)
 sparrow.famped <- sparrow.famped[which(sparrow.famped$FATHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$MOTHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$ANIMAL %in% sparrow.ped$ANIMAL),]
-
-
+sparrow.famped$Family <- as.factor(sparrow.famped$Family)
+library(dplyr)
+sparrow.famped$ANIMAL <- as.character(sparrow.famped$ANIMAL) 
+sparrow.famped$FATHER <- as.character(sparrow.famped$FATHER)
+sparrow.famped$MOTHER <- as.character(sparrow.famped$MOTHER)
+sparrow.famped$Family <- as.character(sparrow.famped$Family)
+y <- as.data.frame(sparrow.famped$ANIMAL %in% sparrow.abel@phdata$id)
 
 create_crimap_input(gwaa.data = sparrow.abel, familyPedigree = sparrow.famped, analysisID = "8a", chr = 8, outdir = "crimap", clear.existing.analysisID = TRUE)
 
