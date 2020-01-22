@@ -1,7 +1,41 @@
-rm(list = ls())
-#setwd("C:/Users/johnb/Downloads/crimaptools-master/crimaptools-master/data")
+rm(list=ls())
+
+#Fix Sex in GWAA.data file ----
+library(GenABEL)
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
+dir()
+
 load("sparrowgen_Helgeland_01_2018.RData")
+sexings_table <-read.table("All_sexings_Helgeland_200k_29112017.txt", header = TRUE)
+
+memory.limit()
+
+#In genABEL the heterogametic sex is coded as 1 (Female WZ in birds...); Homogametic is 0 (Male, ZZ in birds...)
+#Adding proper sex allocation to genABEL data
+
+sexings_table <- sexings_table[, c(1,2)]
+names(sexings_table) <- c("id", "sex")
+sex.add <- merge(sparrowgen.Helgeland@phdata, sexings_table, by = "id")
+sex.add$sex <- sex.add$sex.y
+
+sex.add$sex <- as.character(sex.add$sex)
+sex.add$sex[sex.add$sex == "m"] <- 1   #May need to recode incase swapping was unneccesarry 
+sex.add$sex[sex.add$sex == "f"] <- 0   #May need recode if swap unneccessary
+sex.add$sex.x <- NULL
+sex.add$sex.y <- NULL
+names(sex.add) <- c("id", "father", "mother", "sex")
+
+#Can use this to remove ind with missing sex
+#sex.add <- sex.add[complete.cases(sex.add[,4]),]
+sex.add$sex <- as.numeric(sex.add$sex)
+sparrowgen.Helgeland@phdata[,4] <- sex.add$sex
+rm(sex.add)
+rm(sexings_table)
+sparrowgen.Helgeland@gtdata@male <- sparrowgen.Helgeland@phdata$sex
+
+#setwd("C:/Users/johnb/Downloads/crimaptools-master/crimaptools-master/data")----
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
+
 
 library(crimaptools)
 #load("deer.RData")
@@ -205,6 +239,7 @@ sparrow.abel <- sparrowgen.Helgeland
 sparrow.abel@phdata$Father <- as.character(op.pair$FATHER)
 sparrow.abel@phdata$Mother <- as.character(op.pair$MOTHER)
 sparrow.abel@phdata$id <- sparrow.abel@gtdata@idnames
+
 x <- as.data.frame(sparrow.abel@phdata$id)
 x$gtdata <- sparrow.abel@gtdata@idnames
 
@@ -220,12 +255,14 @@ sparrow.famped <- sparrow.famped[which(sparrow.famped$FATHER %in% sparrow.ped$AN
 sparrow.famped <- sparrow.famped[which(sparrow.famped$MOTHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$ANIMAL %in% sparrow.ped$ANIMAL),]
 sparrow.famped$Family <- as.factor(sparrow.famped$Family)
+sparrow.famped <- sparrow.famped[!(as.numeric(sparrow.famped$Family) %in% which(table(sparrow.famped$Family)<5)),]
+
 library(dplyr)
 sparrow.famped$ANIMAL <- as.character(sparrow.famped$ANIMAL) 
 sparrow.famped$FATHER <- as.character(sparrow.famped$FATHER)
 sparrow.famped$MOTHER <- as.character(sparrow.famped$MOTHER)
 sparrow.famped$Family <- as.character(sparrow.famped$Family)
-y <- as.data.frame(sparrow.famped$ANIMAL %in% sparrow.abel@phdata$id)
+sparrow.famped <- data.frame(lapply(sparrow.famped, as.character), stringsAsFactors=FALSE)
 
 create_crimap_input(gwaa.data = sparrow.abel, familyPedigree = sparrow.famped, analysisID = "8a", chr = 8, outdir = "crimap", clear.existing.analysisID = TRUE)
 
