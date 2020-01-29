@@ -263,53 +263,63 @@ sparrow.famped$FATHER <- as.character(sparrow.famped$FATHER)
 sparrow.famped$MOTHER <- as.character(sparrow.famped$MOTHER)
 sparrow.famped$Family <- as.character(sparrow.famped$Family)
 sparrow.famped <- data.frame(lapply(sparrow.famped, as.character), stringsAsFactors=FALSE)
+#sparrow.famped <-z
 
-create_crimap_input(gwaa.data = sparrow.abel, familyPedigree = sparrow.famped, analysisID = "8a", chr = 8, outdir = "crimap", clear.existing.analysisID = TRUE)
+#Removing 8171406, 8309185, 8348377, 8389616 to see if errors resolve. They appear to have solved...
+sparrow.famped <- sparrow.famped[-c(61:65,271:275, 316:320, 366:370),]
 
-run_crimap_prepare(genfile = "crimap/chr8a.gen", crimap.path = "C:/PathApps/crimap.exe")
+
+create_crimap_input(gwaa.data = sparrow.abel, 
+                    familyPedigree = sparrow.famped, 
+                    analysisID = "9a", 
+                    chr = 9, 
+                    outdir = "crimap", 
+                    clear.existing.analysisID = TRUE)
+
+run_crimap_prepare(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe")
 #Function has not produced the .loc .par and .dat files suggested in the tutorial
 #Using the terminal does work following the crimapinput1 preiously created (n,n,n,n,7,y,y) to generate .loc, .par, and .dat files... mention to Susan a potential issue in crimaptools
 #Alternatively the problem is due to miscommunication between R and Path, have had Path issues in past with Plink...
 
 dir("crimap")
 
-parse_mend_err(prefile = "crimap/chr8a.pre", genfile = "crimap/chr8a.gen", familyPedigree = sparrow.famped)
-read.table("crimap/chr8a.mnd", header = T)
+parse_mend_err(prefile = "crimap/chr9a.pre", genfile = "crimap/chr9a.gen", familyPedigree = sparrow.famped)
+read.table("crimap/chr9a.mnd", header = T)
 #No Mendelian errors detected, in tutorial "2" are listed... Data already cleaned?
 #Next line only used if mendialian erros are present in order to mask them in the .gen file.
-create_crimap_input (gwaa.data = sparrow.abel, 
+create_crimap_input(gwaa.data = sparrow.abel, 
                      familyPedigree = sparrow.famped, 
-                     analysisID = "8a", 
-                     chr = 8, 
+                     analysisID = "9a", 
+                     chr = 9, 
                      outdir = "crimap", 
                      clear.existing.analysisID = TRUE, 
                      use.mnd = TRUE)
 
 
 #If mendelian errors detected you will need to rerun the prepare function. Once again, might need to be done in terminal rather than crimap-tools
-run_crimap_prepare(genfile = "crimap/chr8a.gen", crimap.path = "C:/PathApps/crimap.exe") 
-parse_mend_err(prefile = "crimap/chr8a.pre", genfile = "crimap/chr8a.gen", familyPedigree = sparrow.famped)
+run_crimap_prepare(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe") 
+parse_mend_err(prefile = "crimap/chr9a.pre", genfile = "crimap/chr9a.gen", familyPedigree = sparrow.famped)
 dir("crimap")
 #Repeat the process of looking for mendelian error until there are none.
 
 
 #Build a Linkage Map:----
 
-run_crimap_map(genfile = "crimap/chr8a.gen", crimap.path = "C:/PathApps/crimap.exe")
+run_crimap_map(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe")
 #.map file generated has size "0 B" This is a sign that something is not working in generation of the file. Will need to work with regular functions 
 #in terminal.
 dir("crimap")
-sparrow.map <- parse_map(mapfile = "crimap/chr8a.map")
+sparrow.map <- parse_map(mapfile = "crimap/chr9a.map")
 #Produces error, might be an issue with the sex assignments in the sparrow.abel gwaa.data file in some fashion. Needs checking.
 
 
 #Characterizing recombination events:----
 
-run_crimap_chrompic(genfile = "crimap/chr8a.gen", crimap.path =  "C:/PathApps/crimap.exe")
-sparrow.cmpmap <- parse_map_chrompic(chrompicfile = "crimap/chr8a.cmp")
+run_crimap_chrompic(genfile = "crimap/chr9a.gen", crimap.path =  "C:/PathApps/crimap.exe")
+sparrow.cmpmap <- parse_map_chrompic(chrompicfile = "crimap/chr9a.cmp")
 head(sparrow.cmpmap)
 
-sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr8a.cmp", familyPedigree = sparrow.famped)
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr9a.cmp", familyPedigree = sparrow.famped)
 sparrow.xovers[1:2,]
 
 
@@ -318,10 +328,10 @@ sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
 
 head(sparrow.doubles)
 
-physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 3], 
-                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 3], 
-                      Order = 1:length(which(chromosome(sparrow.abel) == 3)), 
-                      analysisID = "3a")
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 9], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 9], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 9)), 
+                      analysisID = "9a")
 sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
 
 
