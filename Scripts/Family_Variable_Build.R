@@ -8,27 +8,38 @@ dir()
 load("sparrowgen_Helgeland_01_2018.RData")
 sexings_table <-read.table("All_sexings_Helgeland_200k_29112017.txt", header = TRUE)
 
-memory.limit()
-
 #In genABEL the heterogametic sex is coded as 1 (Female WZ in birds...); Homogametic is 0 (Male, ZZ in birds...)
 #Adding proper sex allocation to genABEL data
 
-sexings_table <- sexings_table[, c(1,2)]
-names(sexings_table) <- c("id", "sex")
+sexings_table <- sexings_table[, c(1,2,4)]
+names(sexings_table) <- c("id", "sex", "plinksex")
 sex.add <- merge(sparrowgen.Helgeland@phdata, sexings_table, by = "id")
 sex.add$sex <- sex.add$sex.y
 
 sex.add$sex <- as.character(sex.add$sex)
 sex.add$sex[sex.add$sex == "m"] <- 1   #May need to recode incase swapping was unneccesarry 
 sex.add$sex[sex.add$sex == "f"] <- 0   #May need recode if swap unneccessary
+sex.add$plinksex <- as.character(sex.add$plinksex)
+sex.add$plinksex[sex.add$plinksex == "m"] <- 1   #May need to recode incase swapping was unneccesarry 
+sex.add$plinksex[sex.add$plinksex == "f"] <- 2   #May need recode if swap unneccessary
+sex.add$plinksex[sex.add$plinksex == "u"] <- 0   #May need recode if swap unneccessary
+
 sex.add$sex.x <- NULL
 sex.add$sex.y <- NULL
-names(sex.add) <- c("id", "father", "mother", "sex")
+
+names(sex.add) <- c("id", "father", "mother", "plinksex","sex")
 
 #Can use this to remove ind with missing sex
 #sex.add <- sex.add[complete.cases(sex.add[,4]),]
 sex.add$sex <- as.numeric(sex.add$sex)
+sex.add$sex <- as.integer(sex.add$sex)
+sex.add$plinksex <- as.numeric(sex.add$plinksex)
+sex.add$plinksex <- as.integer(sex.add$plinksex)
+
 sparrowgen.Helgeland@phdata[,4] <- sex.add$sex
+sparrowgen.Helgeland@phdata[,5] <- sex.add$plinksex
+names(sparrowgen.Helgeland@phdata) <- c("id", "father", "mother", "sex","plinksex")
+
 rm(sex.add)
 rm(sexings_table)
 sparrowgen.Helgeland@gtdata@male <- sparrowgen.Helgeland@phdata$sex
@@ -44,6 +55,8 @@ library(reshape2)
 op.pair <- sparrowgen.Helgeland@phdata
 row.names(op.pair) <- NULL
 op.pair$sex <- NULL
+op.pair$plinksex <- NULL
+op.pair <- as.data.frame(op.pair)
 op.pair$id.og <- op.pair$id
 op.pair$Father.og <- op.pair$Father
 op.pair$Mother.og <- op.pair$Mother
@@ -236,8 +249,8 @@ setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 library(crimaptools)
 library(GenABEL)
 sparrow.abel <- sparrowgen.Helgeland
-sparrow.abel@phdata$Father <- as.character(op.pair$FATHER)
-sparrow.abel@phdata$Mother <- as.character(op.pair$MOTHER)
+sparrow.abel@phdata$father <- as.character(op.pair$FATHER)
+sparrow.abel@phdata$mother <- as.character(op.pair$MOTHER)
 sparrow.abel@phdata$id <- sparrow.abel@gtdata@idnames
 
 x <- as.data.frame(sparrow.abel@phdata$id)
