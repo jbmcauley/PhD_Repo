@@ -5,17 +5,64 @@ read.table()
 
 #1.       Make bed for the plink file (remember to include --autosome-num 31)
 
-      plink --file Pdo_200k_n3960_21032017 --maf 0.05 --autosome-num 31 --make-bed --out newplink
+#    plink --file Pdo_200k_n3960_21032017 --maf 0.05 --autosome-num 31 --make-bed --out newplink
 
 #2.       Read .fam into R
   famfile <- read.table("newplink.fam")
- #a.       Recode the IDs to numbers
+  names(famfile) <- c("Fam", "ID","Father", "Mother", "Sex", "Phenotype")
+  library(reshape2)
   
-  ids <- 1:3960 
-  new.ids <- data.frame(famfile[,1], famfile[,2])
-  names(new.ids)[1:2] <- c("oldFam", "oldID")
-  new.ids$newFam <- 1
-  new.ids$newID <- 1:nrow(new.ids)
+  fatherids <-  melt(famfile, id.vars = "ID", measure.vars = "Father")
+  fatherids <- fatherids$value
+  fatheridslist <- list()
+  counter <- 0
+  for (i in 1:length(fatherids)) {
+    if(fatherids[i] %in% new.ids$OldID){
+    counter <- counter + 1
+    fatheridslist[[counter]] <- new.ids$NewID[which(new.ids$OldID == fatherids[i])]
+  }else{
+    counter <- counter + 1
+    fatheridslist[[counter]] <- 0
+  }  
+  }
+  fatheridslist <- do.call(rbind, fatheridslist)
+  fatheridslist <- as.vector(fatheridslist)
+  
+  motherids <-  melt(famfile, id.vars = "ID", measure.vars = "Mother")
+  motherids <- motherids$value
+  motheridslist <- list()
+  counter <- 0
+  for (i in 1:length(motherids)) {
+    if(motherids[i] %in% new.ids$OldID){
+      counter <- counter + 1
+      motheridslist[[counter]] <- new.ids$NewID[which(new.ids$OldID == motherids[i])]
+    }else{
+      counter <- counter + 1
+      motheridslist[[counter]] <- 0
+    }  
+  }
+  motheridslist <- do.call(rbind, motheridslist)
+  motheridslist <- as.vector(motheridslist)
+  
+  fullids$ID <- as.character(fullids$ID)
+  idslist <- c(fullids$ID, fullids$value)
+  idslist <- unique(idslist)
+  idslist <- idslist[-3961]
+  which(idslist == "0")
+
+  pedigree.new <- as.data.frame(1:3960)
+  names(pedigree.new)[1] <- "FamID"
+  pedigree.new$FamID <- 1
+  pedigree.new$withinFamID <- new.ids$NewID[1:3960]
+  pedigree.new$paternalID <- fatheridslist
+  pedigree.new$maternalID <- motheridslist
+  
+  write.table(pedigree.new, file = "updateParents.txt",sep=" ",row.names=FALSE, col.names = FALSE)
+  #Can now update parental ids
+#a.       Recode the IDs to numbers
+  ids <- 1:4226
+  new.ids <- data.frame(1, idslist, 1, ids)
+  new.ids$OldID <- as.character(new.ids$OldID)
   names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID")
   head(new.ids)
   
@@ -41,20 +88,14 @@ read.table()
   #pheno.file$sex[which(sex$F < .5 & sex$SNPSEX == 0)] <- 1 #recode to m
   #pheno.file$sex[which(sex$F >= .5 & sex$SNPSEX == 0)] <- 0  #recode to f
   
- #c.       Make the file for recoding IDs in PLINK (4 cols – OldFamily, Old ID, NewFamily, NewID) 
+#c.       Make the file for recoding IDs in PLINK (4 cols – OldFamily, Old ID, NewFamily, NewID) 
 
-  ids <- 1:3960 
-  new.ids <- data.frame(famfile[,1], famfile[,2])
-  names(new.ids)[1:2] <- c("oldFam", "oldID")
-  new.ids$newFam <- 1
-  new.ids$newID <- 1:nrow(new.ids)
-  head(new.ids)
-  write.table(new.ids, file = "updateIDs.txt",sep="\t",row.names=FALSE, col.names = TRUE)
+  write.table(new.ids, file = "updateIDs.txt",sep=" ",row.names=FALSE, col.names = FALSE)
   
 #3.       Recode the IDs in the PLINK file with –update-ids into a new PLINk file
 
 #4.       Make the .genabelmap file for making the genabel object
-  #a.       Read in PLINK map, remove the cM column, save without headers
+#a.       Read in PLINK map, remove the cM column, save without headers
 
 #5.       Make the GenABEL file
       convert.snp.ped(pedfile = "newfile.ped", 
@@ -63,5 +104,5 @@ read.table()
                 strand = "u", bcast = 1000, traits = 1, mapHasHeaderLine = F)
 
 #6.  
-sparrowabel <- load.gwaa.data(phe = “newfile.pheno”, 
+           sparrowabel <- load.gwaa.data(phe = "newfile.pheno", 
                                   gen = "newfile.gen")
