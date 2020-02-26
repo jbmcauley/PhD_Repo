@@ -17,7 +17,7 @@ read.table()
   fatheridslist <- list()
   counter <- 0
   for (i in 1:length(fatherids)) {
-    if(fatherids[i] %in% new.ids$OldID){
+    if(fatherids[i] %in% famfile$ID){
     counter <- counter + 1
     fatheridslist[[counter]] <- new.ids$NewID[which(new.ids$OldID == fatherids[i])]
   }else{
@@ -33,7 +33,7 @@ read.table()
   motheridslist <- list()
   counter <- 0
   for (i in 1:length(motherids)) {
-    if(motherids[i] %in% new.ids$OldID){
+    if(motherids[i] %in% famfile$ID){
       counter <- counter + 1
       motheridslist[[counter]] <- new.ids$NewID[which(new.ids$OldID == motherids[i])]
     }else{
@@ -44,6 +44,7 @@ read.table()
   motheridslist <- do.call(rbind, motheridslist)
   motheridslist <- as.vector(motheridslist)
   
+  fullids <- data.frame()
   fullids$ID <- as.character(fullids$ID)
   idslist <- c(fullids$ID, fullids$value)
   idslist <- unique(idslist)
