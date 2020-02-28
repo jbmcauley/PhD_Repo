@@ -10,6 +10,14 @@ read.table()
 #2.       Read .fam into R
   famfile <- read.table("newplink.fam")
   names(famfile) <- c("Fam", "ID","Father", "Mother", "Sex", "Phenotype")
+  
+  ids <- 1:3960
+  new.ids <- data.frame(1, famfile$ID, 1, ids)
+  names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID")
+  new.ids$OldID <- as.character(new.ids$OldID)
+  head(new.ids)
+  
+  
   library(reshape2)
   
   fatherids <-  melt(famfile, id.vars = "ID", measure.vars = "Father")
@@ -54,36 +62,38 @@ read.table()
   pedigree.new <- as.data.frame(1:3960)
   names(pedigree.new)[1] <- "FamID"
   pedigree.new$FamID <- 1
-  pedigree.new$withinFamID <- new.ids$NewID[1:3960]
+  pedigree.new$withinFamID <- 1:3960
   pedigree.new$paternalID <- fatheridslist
   pedigree.new$maternalID <- motheridslist
   
   write.table(pedigree.new, file = "updateParents.txt",sep=" ",row.names=FALSE, col.names = FALSE)
   #Can now update parental ids
 #a.       Recode the IDs to numbers
-  ids <- 1:4226
-  new.ids <- data.frame(1, idslist, 1, ids)
-  new.ids$OldID <- as.character(new.ids$OldID)
-  names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID")
-  head(new.ids)
-  
- 
+
   
 #b. Make a phenotype file for Genabel (id, sex, knownsex)
   rm(pheno.file)
   sex <- read.table("newplinksex.sexcheck", header = TRUE)
   knownsex <- read.table("All_sexings_Helgeland_200k_29112017.txt", header = TRUE)
-  pheno.file <- data.frame(famfile$V2, sex$SNPSEX)
-  names(pheno.file) <- c("ID","sex")
+  pheno.file <- data.frame(1, sex$SNPSEX)
+  names(pheno.file) <- c("id","sex")
   pheno.file <- as.data.frame(pheno.file)
-  pheno.file$ID <- new.ids$NewID 
+  pheno.file$id <- 1:3960 
   pheno.file$sex[pheno.file$sex == 2] <- "m"
   pheno.file$sex[pheno.file$sex == 1] <- "f"
   pheno.file$sex[pheno.file$sex == 0] <- "u"
-  pheno.file$knownsex <- pheno.file$sex
   pheno.file$sex[pheno.file$sex == "m"] <- 1
   pheno.file$sex[pheno.file$sex == "f"] <- 0
   pheno.file$sex[pheno.file$sex == "u"] <- 1
+  write.table(pheno.file,"newfile.pheno",col.names = TRUE, row.names = FALSE)
+  write.table(pheno.file, file = "updateSex.txt", sep = " ", row.names = FALSE, col.names = FALSE)
+  
+  pheno.file$sex <- as.numeric(pheno.file$sex)
+  
+  pheno.file[2:3] <- pheno.file[1:2]
+  pheno.file[1] <- 1
+  names(pheno.file) <-  c("FID", "IID", "sex")
+
   #Unknown sex coded to males!
   #Alternatively can reassign based on F value?
   #pheno.file$sex[which(sex$F < .5 & sex$SNPSEX == 0)] <- 1 #recode to m
@@ -95,15 +105,41 @@ read.table()
   
 #3.       Recode the IDs in the PLINK file with –update-ids into a new PLINk file
 
+  system("plink --help")
+  
 #4.       Make the .genabelmap file for making the genabel object
-#a.       Read in PLINK map, remove the cM column, save without headers
+  #Make Binary Files
+  system("plink --file Pdo_200k_n3960_21032017 --autosome-num 31 --maf 0.05 --make-bed --out workfiles")
+  
+  #Update ids
+  system("plink --bfile workfiles --update-ids updateIDs.txt --autosome-num 31 --maf 0.05 --make-bed --out workfiles_ids")
+  
+  
+  system("plink --bfile workfiles_ids --update-parents updateParents.txt --autosome-num 31 --maf 0.05 --make-bed --out workfiles_parids")
+  
+  
+  system("plink --bfile workfiles_parids --update-sex updateSex.txt --autosome-num 31 --maf 0.05 --make-bed --out finalbinaries")
+  
+  
+  system("plink --bfile finalbinaries --recode 12 --autosome-num 31 --maf 0.05 --out test")
 
+  #a.       Read in PLINK map, remove the cM column, save without headers
+  
+  mapfile <- read.table("pedfile.map")
+  mapfile <- mapfile[,-3]
+  write.table(mapfile, file = "mapfile.txt", sep=" ",row.names=FALSE,col.names =FALSE)
+  
 #5.       Make the GenABEL file
-      convert.snp.ped(pedfile = "newfile.ped", 
-                mapfile = "newfile.genabelmap",
+      convert.snp.ped(pedfile = "test.ped", 
+                mapfile = "mapfile.txt",
                 outfile = "newfile.gen",
-                strand = "u", bcast = 1000, traits = 1, mapHasHeaderLine = F)
+                strand = "u", bcast = 1000, traits = 1, mapHasHeaderLine = FALSE)
 
+     ### Error in convert.snp.ped(pedfile = "Pdo_200k_n3960_21032017.ped", mapfile = "mapfile.txt",  : 
+     ###                           coding '43' for SNP not recognised !
+      
 #6.  
+      
+      
            sparrowabel <- load.gwaa.data(phe = "newfile.pheno", 
                                   gen = "newfile.gen")
