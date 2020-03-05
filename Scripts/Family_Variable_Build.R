@@ -52,16 +52,19 @@ library(crimaptools)
 #load("deer.RData")
 library(reshape2)
 
-op.pair <- sparrowgen.Helgeland@phdata
+op.pair <- read.table("updateParents.txt")
 row.names(op.pair) <- NULL
-op.pair$sex <- NULL
-op.pair$plinksex <- NULL
 op.pair <- as.data.frame(op.pair)
+names(op.pair) <- c("Fam","id","Father","Mother")
+op.pair$Fam <- NULL
+
+
+#-----------------No longer Needed with renamed IDs 
+
 op.pair$id.og <- op.pair$id
 op.pair$Father.og <- op.pair$Father
 op.pair$Mother.og <- op.pair$Mother
 
- 
 op.pair$id <- gsub("M", "1", op.pair$id.og)
 op.pair$Father <- gsub("M", "1", op.pair$Father.og)
 op.pair$Mother <- gsub("M", "1", op.pair$Mother.og)
@@ -83,17 +86,18 @@ op.pair$Father.og <- NULL
 op.pair$Mother.og <- NULL
 sparrowgen.Helgeland@gtdata@idnames<- as.character(as.numeric(op.pair$id))
 names(sparrowgen.Helgeland@gtdata@male) <- as.character(as.numeric(op.pair$id))
-
+#-------------------------------------------------------------------------------
 
 names(op.pair) <- c("ANIMAL", "FATHER", "MOTHER")
 op.pair$ANIMAL <- as.numeric(as.character(op.pair$ANIMAL))
 op.pair$FATHER <- as.numeric(as.character(op.pair$FATHER))
 op.pair$MOTHER <- as.numeric(as.character(op.pair$MOTHER))
+library(reshape2)
 
 op.pair.zeros <- melt(op.pair, id = "ANIMAL")
 row.names(op.pair.zeros) <- NULL
-GPa <- op.pair.zeros[1:3116,]
-GMa <- op.pair.zeros[3117:6232,]
+GPa <- op.pair.zeros[1:3960,]
+GMa <- op.pair.zeros[3961:7920,]
 
 
 #-----Maternal Grandfather Setup----
@@ -192,7 +196,7 @@ row.names(sparrow.famped) <- NULL
 
 #----Making Father and Grandparent-Parents 0s----
 counter <- 2
-for (i in 1:1474) {
+for (i in 1:3415) {
   
   sparrow.famped$FATHER[counter] <- 0
   counter <- counter + 5
@@ -248,7 +252,7 @@ rm(list = ls.str(mode = 'character'))
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 library(crimaptools)
 library(GenABEL)
-sparrow.abel <- sparrowgen.Helgeland
+sparrow.abel <- load.gwaa.data(phe = "newfile.pheno", gen = "newfile.gen")
 sparrow.abel@phdata$father <- as.character(op.pair$FATHER)
 sparrow.abel@phdata$mother <- as.character(op.pair$MOTHER)
 sparrow.abel@phdata$id <- sparrow.abel@gtdata@idnames
@@ -278,8 +282,13 @@ sparrow.famped$Family <- as.character(sparrow.famped$Family)
 sparrow.famped <- data.frame(lapply(sparrow.famped, as.character), stringsAsFactors=FALSE)
 #sparrow.famped <-z
 
-#Removing 8171406, 8309185, 8348377, 8389616 to see if errors resolve. They appear to have solved...
-sparrow.famped <- sparrow.famped[-c(61:65,271:275, 316:320, 366:370),]
+#Removing following families: 537, 663, 665, 706, 764, 770, 781, 805, 819, 821, 835, 836, 856, 870, 878, 885, 940, 1000, 1119,
+                          #   1120, 1121, 1940, 1982, 1202, 1203, 1204, 1512, 1556, 1629, 1704, 1715, 1782, 1940, 1982, 1993, 2030, 2201, 2203,
+                          #   2231, 2253, 2262, 2292, 2340, 2350, 2352, 2357, 2366, 2380, 2396, 2423, 2429, 2434, 2440, 2448, 2486,
+                          #   2493, 2509, 2615, 2695, 2731, 2732, 2784, 2785, 2789, 2946, 2978, 2979, 3135, 3136, 3149, 3156, 3158,
+                          #   3241, 3314, 3316, 3342, 3343, 3344, 3345, 3397, 3424, 3426, 3495)
+#consider devopling script to elimnate manual family type?
+sparrow.famped <- sparrow.famped[-which(sparrow.famped$Family == "Offspring_Mum_1982"),]
 
 
 create_crimap_input(gwaa.data = sparrow.abel, 
@@ -288,6 +297,8 @@ create_crimap_input(gwaa.data = sparrow.abel,
                     chr = 9, 
                     outdir = "crimap", 
                     clear.existing.analysisID = TRUE)
+
+
 
 run_crimap_prepare(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe")
 #Function has not produced the .loc .par and .dat files suggested in the tutorial
@@ -322,7 +333,7 @@ run_crimap_map(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.e
 #.map file generated has size "0 B" This is a sign that something is not working in generation of the file. Will need to work with regular functions 
 #in terminal.
 dir("crimap")
-sparrow.map <- parse_map(mapfile = "crimap/chr9a.map")
+sparrow.map32 <- parse_map(mapfile = "crimap/chr32a.map")
 #Produces error, might be an issue with the sex assignments in the sparrow.abel gwaa.data file in some fashion. Needs checking.
 
 
