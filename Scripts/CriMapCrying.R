@@ -26,8 +26,8 @@ read.table("crimap/chr11a.mnd", header = T)
 #Next line only used if mendialian erros are present in order to mask them in the .gen file.
 create_crimap_input (gwaa.data = sparrow.abel, 
                      familyPedigree = sparrow.famped, 
-                     analysisID = "11a", 
-                     chr = 11, 
+                     analysisID = "19a", 
+                     chr = 19, 
                      outdir = "crimap", 
                      clear.existing.analysisID = TRUE, 
                      use.mnd = TRUE)

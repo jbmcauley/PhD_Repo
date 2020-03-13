@@ -70,22 +70,25 @@ read.table()
   #Can now update parental ids
 #a.       Recode the IDs to numbers
 
-  
+  "plink --file Pdo_200k_n3960_21032017 --autosome-num 31 --maf 0.05 --check-sex --make-bed --out newplinksex"
 #b. Make a phenotype file for Genabel (id, sex, knownsex)
   rm(pheno.file)
   sex <- read.table("newplinksex.sexcheck", header = TRUE)
-  knownsex <- read.table("All_sexings_Helgeland_200k_29112017.txt", header = TRUE)
+  #knownsex <- read.table("All_sexings_Helgeland_200k_29112017.txt", header = TRUE)
   pheno.file <- data.frame(1, sex$SNPSEX)
   names(pheno.file) <- c("id","sex")
   pheno.file <- as.data.frame(pheno.file)
   pheno.file$id <- 1:3960 
+  #Sexs assinged by plink sex check are incorrect because of Birds having alternate heterogametic sex
   pheno.file$sex[pheno.file$sex == 2] <- "m"
   pheno.file$sex[pheno.file$sex == 1] <- "f"
   pheno.file$sex[pheno.file$sex == 0] <- "u"
   pheno.file$sex[pheno.file$sex == "m"] <- 1
-  pheno.file$sex[pheno.file$sex == "f"] <- 0
+  pheno.file$sex[pheno.file$sex == "f"] <- 2
   pheno.file$sex[pheno.file$sex == "u"] <- 1
   write.table(pheno.file,"newfile.pheno",col.names = TRUE, row.names = FALSE)
+  pheno.file[2] <- NULL
+  pheno.file$sex <- as.numeric(pheno.file$sex)
   write.table(pheno.file, file = "updateSex.txt", sep = " ", row.names = FALSE, col.names = FALSE)
   
   pheno.file$sex <- as.numeric(pheno.file$sex)
@@ -127,7 +130,7 @@ read.table()
   
   mapfile <- read.table("pedfile.map")
   mapfile <- mapfile[,-3]
-  write.table(mapfile, file = "mapfile.txt", sep=" ",row.names=FALSE,col.names =FALSE)
+  write.table(mapfile, file = "mapfile.txt", sep=" ",row.names = FALSE,col.names = FALSE)
   
 #5.       Make the GenABEL file
       convert.snp.ped(pedfile = "test.ped", 
@@ -143,3 +146,19 @@ read.table()
       
            sparrowabel <- load.gwaa.data(phe = "newfile.pheno", 
                                   gen = "newfile.gen")
+#After mendel errors:
+           system("plink --bfile finalbinaries --mendel --autosome-num 31 --maf 0.05 --out test_mendelfix")
+           
+SNPs_Problem <- read.table("test_mendelfix.hh", header = FALSE)
+length(unique(SNPs_Problem$V3))
+
+#Taking out the hh snps from map file
+
+mapfile <- read.table("mapfile.txt", header = FALSE)
+which(mapfile$V2 %in% SNPs_Problem$V3)
+#which(SNPs_Problem$V3 %in% mapfile$V2)
+
+write.table(mapfile, file = "mapfile_NO_hh.txt", sep=" ",row.names = FALSE,col.names = FALSE)
+
+
+
