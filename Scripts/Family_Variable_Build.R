@@ -59,7 +59,7 @@ names(op.pair) <- c("Fam","id","Father","Mother")
 op.pair$Fam <- NULL
 
 
-#-----------------No longer Needed with renamed IDs 
+#-----------------No longer Needed with renamed IDs---- 
 
 op.pair$id.og <- op.pair$id
 op.pair$Father.og <- op.pair$Father
@@ -94,10 +94,22 @@ op.pair$FATHER <- as.numeric(as.character(op.pair$FATHER))
 op.pair$MOTHER <- as.numeric(as.character(op.pair$MOTHER))
 library(reshape2)
 
+#Fix the following code after QC's have been applied to the sparrow.abel file. This needs to be done 
+#because Crimap will get upset if the family pedigree contains IDs not in the gwaa.data object.
+id.sub <- sparrow.abel@phdata$id
+id.sub <- as.numeric(id.sub)
+which(op.pair$ANIMAL %in% id.sub)
+op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
+which()
+row.names(op.pair) <- NULL
+####
+####
+####
+
 op.pair.zeros <- melt(op.pair, id = "ANIMAL")
 row.names(op.pair.zeros) <- NULL
-GPa <- op.pair.zeros[1:3960,]
-GMa <- op.pair.zeros[3961:7920,]
+GPa <- op.pair.zeros[1:3184,]
+GMa <- op.pair.zeros[3185:6368,]
 
 
 #-----Maternal Grandfather Setup----
@@ -247,12 +259,26 @@ rm(list = ls.str(mode = 'numeric'))
 rm(list = ls.str(mode = 'logical'))
 rm(list = ls.str(mode = 'character'))
 
+####
+####
+####
+####
+
 
 #Attempting CryMap with previously created Fam Var----
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 library(crimaptools)
 library(GenABEL)
-sparrow.abel <- load.gwaa.data(phe = "newfile.pheno", gen = "newfile.gen")
+
+#ensure pheno file has proper sex assignments.
+newfile.pheno <- read.table("updateSex.txt", header = FALSE)
+newfile.pheno$V1 <- NULL
+names(newfile.pheno) <- c("id", "sex")
+newfile.pheno$sex[newfile.pheno$sex == 2] <- 0
+write.table(newfile.pheno, file = "newfile.pheno", row.names = FALSE)
+
+#Use pheno file and most recent .gen file to construct genABEL file
+sparrow.abel <- load.gwaa.data(phe = "newfile.pheno", gen = "newfile-ME-fixed.gen")
 sparrow.abel@phdata$father <- as.character(op.pair$FATHER)
 sparrow.abel@phdata$mother <- as.character(op.pair$MOTHER)
 sparrow.abel@phdata$id <- sparrow.abel@gtdata@idnames
@@ -265,13 +291,18 @@ x$gtdata <- sparrow.abel@gtdata@idnames
 rm(op.pair.zeros)
 getwd()
 sparrow.famped_backup <- sparrow.famped
+#sparrow.famped <- sparrow.famped_backup
 sparrow.ped_backup <- sparrow.ped
+#sparrow.ped <- sparrow.ped_backup
 vec <- c(0,0,0)
 sparrow.ped <- rbind(sparrow.ped,vec)
-sparrow.famped <- sparrow.famped[which(sparrow.famped$FATHER %in% sparrow.ped$ANIMAL),]
+sparrow.famped <- sparrow.famped[which(!(sparrow.famped$FATHER %in% sparrow.famped$ANIMAL)),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$MOTHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$ANIMAL %in% sparrow.ped$ANIMAL),]
 sparrow.famped$Family <- as.factor(sparrow.famped$Family)
+
+
+
 sparrow.famped <- sparrow.famped[!(as.numeric(sparrow.famped$Family) %in% which(table(sparrow.famped$Family)<5)),]
 
 library(dplyr)

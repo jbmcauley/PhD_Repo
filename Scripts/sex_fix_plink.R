@@ -1,5 +1,6 @@
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
-
+library(GenABEL)
+library(crimaptools)
 read.table()
 
 
@@ -80,6 +81,8 @@ read.table()
   pheno.file <- as.data.frame(pheno.file)
   pheno.file$id <- 1:3960 
   #Sexs assinged by plink sex check are incorrect because of Birds having alternate heterogametic sex
+  #Unknowns coded to males; ind. 136,302,340,348,417,517,537,596,627,646,663,664,706,1000,1704,1902,1940,1993,2143,2292,2380,2434,2486,2493,2538,2654,2723,2816,2978,3158,3272,3314,3388,3538,3911 mothers coded to female to match pedigree, SNP assigned male
+  #ind. 537,563,764,2030,3779 fathers coded to male to match pedigree
   pheno.file$sex[pheno.file$sex == 2] <- "m"
   pheno.file$sex[pheno.file$sex == 1] <- "f"
   pheno.file$sex[pheno.file$sex == 0] <- "u"
@@ -147,18 +150,14 @@ read.table()
            sparrowabel <- load.gwaa.data(phe = "newfile.pheno", 
                                   gen = "newfile.gen")
 #After mendel errors:
-           system("plink --bfile finalbinaries --mendel --autosome-num 31 --maf 0.05 --out test_mendelfix")
-           
-SNPs_Problem <- read.table("test_mendelfix.hh", header = FALSE)
-length(unique(SNPs_Problem$V3))
-
-#Taking out the hh snps from map file
-
-mapfile <- read.table("mapfile.txt", header = FALSE)
-which(mapfile$V2 %in% SNPs_Problem$V3)
-#which(SNPs_Problem$V3 %in% mapfile$V2)
-
-write.table(mapfile, file = "mapfile_NO_hh.txt", sep=" ",row.names = FALSE,col.names = FALSE)
+           system("plink --bfile finalbinaries --set-me-missing --autosome-num 31 --maf 0.05 --out test_ME-fixed")
+           mapfile <- read.table("test_ME-fixed.map")
+           mapfile <- mapfile[,-3]
+           write.table(mapfile, file = "mapfile_ME-fixed.txt", sep=" ",row.names = FALSE,col.names = FALSE)
+           convert.snp.ped(pedfile = "test_ME-fixed.ped", 
+                           mapfile = "mapfile_ME-fixed.txt",
+                           outfile = "newfile-ME-fixed.gen",
+                           strand = "u", bcast = 1000, traits = 1, mapHasHeaderLine = FALSE)
 
 
 
