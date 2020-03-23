@@ -1,0 +1,18 @@
+PLINK v1.90b6.12 64-bit (28 Oct 2019)
+Options in effect:
+  --autosome-num 31
+  --file NewIDs
+  --maf 0.05
+  --make-bed
+  --out NewIDs
+  --update-parents updateParents.txt
+
+Hostname: SCE-BIO-C05390
+Working directory: C:\Users\s1945757\PhD_Repo
+Start time: Fri Feb 28 10:54:13 2020
+
+Random number seed: 1582887253
+32094 MB RAM detected; reserving 16047 MB for main workspace.
+Error: Failed to open NewIDs.map.
+
+End time: Fri Feb 28 10:54:13 2020

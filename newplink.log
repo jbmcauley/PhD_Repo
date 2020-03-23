@@ -1,0 +1,17 @@
+PLINK v1.90b6.12 64-bit (28 Oct 2019)
+Options in effect:
+  --autosome-num 31
+  --file Pdo_200k_n3960_21032017
+  --maf 0.05
+  --make-bed
+  --out newplink
+
+Hostname: SCE-BIO-C05390
+Working directory: C:\Users\s1945757\PhD_Repo
+Start time: Thu Mar 19 13:30:24 2020
+
+Random number seed: 1584624624
+32094 MB RAM detected; reserving 16047 MB for main workspace.
+Error: Failed to open Pdo_200k_n3960_21032017.map.
+
+End time: Thu Mar 19 13:30:24 2020
