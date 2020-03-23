@@ -14,8 +14,10 @@ read.table()
   
   ids <- 1:3960
   new.ids <- data.frame(1, famfile$ID, 1, ids)
-  names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID")
+  names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID", rownames = FALSE)
   new.ids$OldID <- as.character(new.ids$OldID)
+  row.names(new.ids) <- NULL
+  write.table(new.ids, file = "ID-Recode-Key.txt", row.names = FALSE)
   head(new.ids)
   
   
@@ -158,6 +160,17 @@ read.table()
                            mapfile = "mapfile_ME-fixed.txt",
                            outfile = "newfile-ME-fixed.gen",
                            strand = "u", bcast = 1000, traits = 1, mapHasHeaderLine = FALSE)
+           sparrowabel <- load.gwaa.data(phe = "newfile.pheno", 
+                                         gen = "newfile-ME-fixed.gen")
 
-
-
+           data1 <- sparrowabel
+           #Relaxed callrate to 0.9
+           qc1 <- check.marker(data1, callrate = .9, ibs.threshold = .9, maf = .01, p.level = 0)
+           
+           
+           #NEED TO SORT OUT HOW TO PROPERLY CHECK ZZ WZ
+           data1 <- data1[qc1$idok, qc1$snpok]
+           data1 <- Xfix(data1)
+           save(data1, file = "sparrowABEL_QC.RData")
+           load("sparrowABEL_QC.RData")
+           

@@ -2,6 +2,7 @@ rm(list=ls())
 
 #Fix Sex in GWAA.data file ----
 library(GenABEL)
+library(crimaptools)
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
 dir()
 
@@ -58,34 +59,6 @@ op.pair <- as.data.frame(op.pair)
 names(op.pair) <- c("Fam","id","Father","Mother")
 op.pair$Fam <- NULL
 
-
-#-----------------No longer Needed with renamed IDs---- 
-
-op.pair$id.og <- op.pair$id
-op.pair$Father.og <- op.pair$Father
-op.pair$Mother.og <- op.pair$Mother
-
-op.pair$id <- gsub("M", "1", op.pair$id.og)
-op.pair$Father <- gsub("M", "1", op.pair$Father.og)
-op.pair$Mother <- gsub("M", "1", op.pair$Mother.og)
-
-op.pair$id <- gsub("N", "2", op.pair$id)
-op.pair$Father <- gsub("N", "2", op.pair$Father)
-op.pair$Mother <- gsub("N", "2", op.pair$Mother)
-
-op.pair$id <- gsub("L", "3", op.pair$id)
-op.pair$Father <- gsub("L", "3", op.pair$Father)
-op.pair$Mother <- gsub("L", "3", op.pair$Mother)
-
-op.pair$id <- gsub("F", "4", op.pair$id)
-op.pair$Father <- gsub("F", "4", op.pair$Father)
-op.pair$Mother <- gsub("F", "4", op.pair$Mother)
-
-op.pair$id.og <- NULL
-op.pair$Father.og <- NULL
-op.pair$Mother.og <- NULL
-sparrowgen.Helgeland@gtdata@idnames<- as.character(as.numeric(op.pair$id))
-names(sparrowgen.Helgeland@gtdata@male) <- as.character(as.numeric(op.pair$id))
 #-------------------------------------------------------------------------------
 
 names(op.pair) <- c("ANIMAL", "FATHER", "MOTHER")
@@ -100,7 +73,6 @@ id.sub <- sparrow.abel@phdata$id
 id.sub <- as.numeric(id.sub)
 which(op.pair$ANIMAL %in% id.sub)
 op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
-which()
 row.names(op.pair) <- NULL
 ####
 ####
@@ -108,8 +80,8 @@ row.names(op.pair) <- NULL
 
 op.pair.zeros <- melt(op.pair, id = "ANIMAL")
 row.names(op.pair.zeros) <- NULL
-GPa <- op.pair.zeros[1:3184,]
-GMa <- op.pair.zeros[3185:6368,]
+GPa <- op.pair.zeros[1:length(op.pair$ANIMAL),]
+GMa <- op.pair.zeros[(length(op.pair$ANIMAL)+1):length(op.pair.zeros$ANIMAL),]
 
 
 #-----Maternal Grandfather Setup----
@@ -145,6 +117,7 @@ GMa$MGrand <- MGrand[,1]
 #-----Rebuild .ped-----
 op.pair$MGrandM <- MGrand[,1]
 op.pair$MGrandF <- PGrand[,1]
+
 df <- op.pair
 row_sub <- apply(op.pair, 1, function(row) all(row !=0 ))
 df <- df[row_sub,]
@@ -299,14 +272,16 @@ sparrow.ped <- rbind(sparrow.ped,vec)
 sparrow.famped <- sparrow.famped[which(!(sparrow.famped$FATHER %in% sparrow.famped$ANIMAL)),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$MOTHER %in% sparrow.ped$ANIMAL),]
 sparrow.famped <- sparrow.famped[which(sparrow.famped$ANIMAL %in% sparrow.ped$ANIMAL),]
+
+
+#Remove incomplete families of less than 5
 sparrow.famped$Family <- as.factor(sparrow.famped$Family)
-
-
-
 sparrow.famped <- sparrow.famped[!(as.numeric(sparrow.famped$Family) %in% which(table(sparrow.famped$Family)<5)),]
+sparrow.famped$Family <- as.character(sparrow.famped$Family)
+
 
 library(dplyr)
-sparrow.famped$ANIMAL <- as.character(sparrow.famped$ANIMAL) 
+sparrow.famped$ANIMAL <- as.character(sparrow.famped$ANIMAL)
 sparrow.famped$FATHER <- as.character(sparrow.famped$FATHER)
 sparrow.famped$MOTHER <- as.character(sparrow.famped$MOTHER)
 sparrow.famped$Family <- as.character(sparrow.famped$Family)
@@ -322,59 +297,63 @@ sparrow.famped <- data.frame(lapply(sparrow.famped, as.character), stringsAsFact
 sparrow.famped <- sparrow.famped[-which(sparrow.famped$Family == "Offspring_Mum_1982"),]
 
 
+sparrow.famped$ANIMAL <- as.numeric(sparrow.famped$ANIMAL)
+sparrow.famped$FATHER <- as.numeric(sparrow.famped$FATHER)
+sparrow.famped$MOTHER <- as.numeric(sparrow.famped$MOTHER)
+
 create_crimap_input(gwaa.data = sparrow.abel, 
                     familyPedigree = sparrow.famped, 
-                    analysisID = "9a", 
-                    chr = 9, 
+                    analysisID = "19a", 
+                    chr = 19, 
                     outdir = "crimap", 
                     clear.existing.analysisID = TRUE)
 
 
 
-run_crimap_prepare(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe")
+run_crimap_prepare(genfile = "crimap/chr19a.gen", crimap.path = "C:/PathApps/crimap.exe")
 #Function has not produced the .loc .par and .dat files suggested in the tutorial
 #Using the terminal does work following the crimapinput1 preiously created (n,n,n,n,7,y,y) to generate .loc, .par, and .dat files... mention to Susan a potential issue in crimaptools
 #Alternatively the problem is due to miscommunication between R and Path, have had Path issues in past with Plink...
 
 dir("crimap")
 
-parse_mend_err(prefile = "crimap/chr9a.pre", genfile = "crimap/chr9a.gen", familyPedigree = sparrow.famped)
-read.table("crimap/chr9a.mnd", header = T)
+parse_mend_err(prefile = "crimap/chr19a.pre", genfile = "crimap/chr19a.gen", familyPedigree = sparrow.famped)
+read.table("crimap/chr19a.mnd", header = T)
 #No Mendelian errors detected, in tutorial "2" are listed... Data already cleaned?
 #Next line only used if mendialian erros are present in order to mask them in the .gen file.
 create_crimap_input(gwaa.data = sparrow.abel, 
                      familyPedigree = sparrow.famped, 
-                     analysisID = "9a", 
-                     chr = 9, 
+                     analysisID = "19a", 
+                     chr = 19, 
                      outdir = "crimap", 
                      clear.existing.analysisID = TRUE, 
                      use.mnd = TRUE)
 
 
 #If mendelian errors detected you will need to rerun the prepare function. Once again, might need to be done in terminal rather than crimap-tools
-run_crimap_prepare(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe") 
-parse_mend_err(prefile = "crimap/chr9a.pre", genfile = "crimap/chr9a.gen", familyPedigree = sparrow.famped)
+run_crimap_prepare(genfile = "crimap/chr19a.gen", crimap.path = "C:/PathApps/crimap.exe")
+parse_mend_err(prefile = "crimap/chr19a.pre", genfile = "crimap/chr19a.gen", familyPedigree = sparrow.famped)
 dir("crimap")
 #Repeat the process of looking for mendelian error until there are none.
 
 
 #Build a Linkage Map:----
 
-run_crimap_map(genfile = "crimap/chr9a.gen", crimap.path = "C:/PathApps/crimap.exe")
+run_crimap_map(genfile = "crimap/chr19a.gen", crimap.path = "C:/PathApps/crimap.exe")
 #.map file generated has size "0 B" This is a sign that something is not working in generation of the file. Will need to work with regular functions 
 #in terminal.
 dir("crimap")
-sparrow.map32 <- parse_map(mapfile = "crimap/chr32a.map")
+sparrow.map19 <- parse_map(mapfile = "crimap/chr19a.map")
 #Produces error, might be an issue with the sex assignments in the sparrow.abel gwaa.data file in some fashion. Needs checking.
 
 
 #Characterizing recombination events:----
 
-run_crimap_chrompic(genfile = "crimap/chr9a.gen", crimap.path =  "C:/PathApps/crimap.exe")
-sparrow.cmpmap <- parse_map_chrompic(chrompicfile = "crimap/chr9a.cmp")
+run_crimap_chrompic(genfile = "crimap/chr19a.gen", crimap.path =  "C:/PathApps/crimap.exe")
+sparrow.cmpmap <- parse_map_chrompic(chrompicfile = "crimap/chr19a.cmp")
 head(sparrow.cmpmap)
 
-sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr9a.cmp", familyPedigree = sparrow.famped)
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr19a.cmp", familyPedigree = sparrow.famped)
 sparrow.xovers[1:2,]
 
 

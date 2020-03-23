@@ -35,7 +35,7 @@ run_crimap_map(genfile = paste("crimap/chr",zzz,"a.gen", sep = ""), crimap.path 
 #.map file generated has size "0 B" This is a sign that something is not working in generation of the file. Will need to work with regular functions 
 #in terminal.
 dir("crimap")
-sparrow.map <- parse_map(mapfile = paste("crimap/chr",zzz,"a.map", sep = ""))
+
 #Produces error, might be an issue with the sex assignments in the sparrow.abel gwaa.data file in some fashion. Needs checking.
 
 
