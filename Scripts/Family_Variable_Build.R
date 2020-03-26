@@ -4,6 +4,7 @@ rm(list=ls())
 library(GenABEL)
 library(crimaptools)
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
+setwd("C:/Users/johnb/Dropbox/PLINK-files 200k SNP-data/")
 dir()
 
 load("sparrowgen_Helgeland_01_2018.RData")
@@ -69,11 +70,14 @@ library(reshape2)
 
 #Fix the following code after QC's have been applied to the sparrow.abel file. This needs to be done 
 #because Crimap will get upset if the family pedigree contains IDs not in the gwaa.data object.
-id.sub <- sparrow.abel@phdata$id
-id.sub <- as.numeric(id.sub)
-which(op.pair$ANIMAL %in% id.sub)
-op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
-row.names(op.pair) <- NULL
+load('sparrowABEL_QC.RData')
+sparrow.abel <- data1
+rm(data1)
+#id.sub <- sparrow.abel@phdata$id
+#id.sub <- as.numeric(id.sub)
+#which(op.pair$ANIMAL %in% id.sub)
+#op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
+#row.names(op.pair) <- NULL
 ####
 ####
 ####
@@ -82,6 +86,7 @@ op.pair.zeros <- melt(op.pair, id = "ANIMAL")
 row.names(op.pair.zeros) <- NULL
 GPa <- op.pair.zeros[1:length(op.pair$ANIMAL),]
 GMa <- op.pair.zeros[(length(op.pair$ANIMAL)+1):length(op.pair.zeros$ANIMAL),]
+
 
 
 #-----Maternal Grandfather Setup----
@@ -101,7 +106,7 @@ GMa$PGrand <- PGrand[,1]
 
 
 
-#-----GrandMother Setup----
+#-----Maternal GrandMother Setup----
 MGrand <- list()
 counter <- 0
 for (i in 1:length(op.pair$ANIMAL)) {
@@ -114,11 +119,48 @@ MGrand <- do.call(rbind, MGrand)
 GMa$MGrand <- MGrand[,1]
 
 
+#-----Paternal GrandFather Setup----
+
+Grand <- list()
+counter <- 0
+for (i in 1:length(op.pair$ANIMAL)) {
+  counter <- counter +1
+  if(op.pair$FATHER[i] != 0){
+    Grand[[counter]] <- op.pair$FATHER[which(op.pair$ANIMAL == op.pair$FATHER[i])]
+  }else{Grand[[counter]] <- 0} #Ind not a mother therefore the maternal Grandfather is unknown
+}
+
+idx <- !(sapply(Grand, length))
+Grand[idx] <- 0
+Grand <- do.call(rbind, Grand)
+GPa$PGrandF <- Grand[,1]
+
+#Paternal GrandMother Setup-
+PGrandM <- list()
+counter <- 0
+for (i in 1:length(op.pair$ANIMAL)) {
+  counter <- counter + 1
+  PGrandM[[counter]] <- GMa$value[which(GPa$ANIMAL == GPa$value[i])]
+}
+idx <- !(sapply(PGrandM, length))
+PGrandM[idx] <- 0
+PGrandM <- do.call(rbind, PGrandM)
+GPa$PGrandM <- PGrandM[,1]
+
+
+
+
+
+
 #-----Rebuild .ped-----
 op.pair$MGrandM <- MGrand[,1]
 op.pair$MGrandF <- PGrand[,1]
 
+
 df <- op.pair
+df$PGrandM <- NULL
+df$PGrandF <- NULL
+
 row_sub <- apply(op.pair, 1, function(row) all(row !=0 ))
 df <- df[row_sub,]
 row.names(df) <- NULL
@@ -178,7 +220,6 @@ sparrow.ped <- df
 sparrow.famped <- sparrow.famped[order(sparrow.famped$Family),]
 row.names(sparrow.famped) <- NULL
 
-
 #----Making Father and Grandparent-Parents 0s----
 counter <- 2
 for (i in 1:3415) {
@@ -216,6 +257,126 @@ for (i in 1:1474) {
   sparrow.famped$FATHER[counter] <- 0
   counter <- counter + 5
 }
+sparrow.famped.ALL_Mothers <- sparrow.famped
+
+
+##############
+##############
+##############
+#Making a fam.ped for the Dads. 
+
+op.pair$MGrandM <- PGrandM[,1]
+op.pair$MGrandF <- Grand[,1]
+op.pair$PGrandF <- NULL
+op.pair$PGrandM <- NULL
+
+df <- op.pair
+row_sub <- apply(op.pair, 1, function(row) all(row !=0 ))
+df <- df[row_sub,]
+row.names(df) <- NULL
+
+OffspringVec <- df$ANIMAL
+faths <- df$FATHER
+mother <- df$MOTHER
+Mgrandf <- df$MGrandF
+MgrandM <- df$MGrandM
+pedvec <- as.data.frame(c(OffspringVec,faths,mother, Mgrandf,MgrandM))
+names(pedvec) <- "ANIMAL"
+
+FATHER <- vector()
+MOTHER <- vector()
+counter <- 0
+for(i in 1:length(pedvec$ANIMAL)){
+  counter <- counter + 1
+  if(any(pedvec$ANIMAL[i] == op.pair$ANIMAL)){
+    FATHER[counter] <- op.pair$FATHER[which(pedvec$ANIMAL[i] == op.pair$ANIMAL)]
+    MOTHER[counter] <- op.pair$MOTHER[which(pedvec$ANIMAL[i] == op.pair$ANIMAL)]}
+  else{
+    FATHER[counter] <- 0
+    MOTHER[counter] <- 0
+  }
+}
+pedvec$FATHER <- FATHER
+pedvec$MOTHER <- MOTHER
+
+
+FAM <- vector()
+counter <- 0
+for(i in 1:length(df$ANIMAL)){
+  counter <- counter + 1
+  FAM[counter] <- paste("Offspring_Dad", as.character(df$ANIMAL[i]), sep = "_")
+}
+for(i in 1:length(df$FATHER)){
+  counter <- counter + 1
+  FAM[counter] <- paste("Offspring_Dad", as.character(df$ANIMAL[i]), sep = "_")
+}
+for(i in 1:length(df$MOTHER)){
+  counter <- counter + 1
+  FAM[counter] <- paste("Offspring_Dad", as.character(df$ANIMAL[i]), sep = "_")
+}
+for(i in 1:length(df$MGrandM)){
+  counter <- counter + 1
+  FAM[counter] <- paste("Offspring_Dad", as.character(df$ANIMAL[i]), sep = "_")
+}
+for(i in 1:length(df$MGrandF)){
+  counter <- counter + 1
+  FAM[counter] <- paste("Offspring_Dad", as.character(df$ANIMAL[i]), sep = "_")
+}
+pedvec$Family <- FAM
+length(unique(pedvec$Family))
+
+sparrow.famped.Fathers <- pedvec
+sparrow.ped <- df
+sparrow.famped.Fathers <- sparrow.famped.Fathers[order(sparrow.famped.Fathers$Family),]
+row.names(sparrow.famped.Fathers) <- NULL
+
+
+#----Making Mother and Grandparent-Parents 0s----
+counter <- 3
+for (i in 1:3415) {
+  
+  sparrow.famped.Fathers$FATHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 3
+for (i in 1:1474) {
+  
+  sparrow.famped.Fathers$MOTHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 4
+for (i in 1:1474) {
+  
+  sparrow.famped.Fathers$FATHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 4
+for (i in 1:1474) {
+  
+  sparrow.famped.Fathers$MOTHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 5
+for (i in 1:1474) {
+  
+  sparrow.famped.Fathers$MOTHER[counter] <- 0
+  counter <- counter + 5
+}
+counter <- 5
+for (i in 1:1474) {
+  
+  sparrow.famped.Fathers$FATHER[counter] <- 0
+  counter <- counter + 5
+}
+
+
+
+
+sparrow.famped <- rbind(sparrow.famped.ALL_Mothers,sparrow.famped.Fathers)
+write.table(sparrow.famped,file = "fam.ped_unabridged.txt", row.names = FALSE)
+
+
+
 
 #Tidying----
 rm(df)
@@ -231,6 +392,7 @@ sparrow.ped$MGrandF <- NULL
 rm(list = ls.str(mode = 'numeric'))
 rm(list = ls.str(mode = 'logical'))
 rm(list = ls.str(mode = 'character'))
+
 
 ####
 ####

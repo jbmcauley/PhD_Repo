@@ -135,23 +135,34 @@ for(i in 1:14){
          op.pair.zeros$FID[i] %in% op.pair.zeros$MOTHER | 
          op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER | 
          op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDMOTHER) == TRUE){
+    
     if(op.pair.zeros$FID[i] %in% op.pair.zeros$FATHER){
-        if(op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER){
+        
+      if(op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDFATHER){
           for (j in which(op.pair.zeros$GRANDFATHER == op.pair.zeros$FID[i])){
-          if(op.pair.zeros$FID[j] %in% op.pair.zeros$FATHER){  
-            #Restarts the process until the first link in OP chain established
-            #Somewhat of a repeat of the chain, dangerously never ending? Need to spend time
-            #mulling this over
-          }else{
-            op.pair.zeros$FamilyID[i] <- NA
-            addgroup <- op.pair.zeros[j,]
-            addgroup$FamilyID <- addgroup$FID
-            row.names(addgroup) <- NULL
-            counter <- counter + 1
-            y[[counter]] <- cbind(op.pair.zeros, addgroup)
-          }}
-        }else{} #If the individual is only a father and not also a grandfather
+            if(op.pair.zeros$FID[j] %in% op.pair.zeros$FATHER){  
+              #Restarts the process until the first link in OP chain established
+              #Somewhat of a repeat of the chain, dangerously never ending? Need to spend time
+              #mulling this over
+              op.pair.zeros$FID[i]
+            }else{
+              op.pair.zeros$FamilyID[i] <- NA
+              addgroup <- op.pair.zeros[j,]
+              addgroup$FamilyID <- addgroup$FID
+              row.names(addgroup) <- NULL
+              counter <- counter + 1
+              y[[counter]] <- c(t(op.pair.zeros), t(addgroup))
+            }}
+        }else{ #If the individual is only a father and not also a grandfather
+          if(op.pair.zeros$FID[which(op.pair.zeros$FID[i] == op.pair.zeros$FATHER)]
+             %in% op.pair.zeros$MOTHER){ #If they are a father of a mother...
+            if(op.pair.zeros$FID)
+          }
+        } 
     }
+    
+    
+    #Mothers
     if(op.pair.zeros$FID[i] %in% op.pair.zeros$MOTHER){
       if(op.pair.zeros$FID[i] %in% op.pair.zeros$GRANDMOTHER){
         for (k in which(op.pair.zeros$GRANDMOTHER == op.pair.zeros$FID[i])){
@@ -163,16 +174,19 @@ for(i in 1:14){
             addgroup$FamilyID <- addgroup$FID
             row.names(addgroup) <- NULL
             counter <- counter + 1
-            y[[counter]] <- cbind(op.pair.zeros, addgroup)
+            y[[counter]] <- c(t(op.pair.zeros), t(addgroup))
           }}
-      }else{} #If the individual is only a mother and not also a grandmother
+      }else{ #If the individual is only a mother and not also a grandmother
+        
+      } 
     }
     }else{
-    FamilyID <- op.pair.zeros$FID[i]
-    op.pair.zeros$FamilyID[i] <- FamilyID
+    for(t in which(op.pair.zeros$FID %notin% op.pair.zeros$MOTHER & 
+                   op.pair.zeros$FID %notin% op.pair.zeros$FATHER)){
+    op.pair.zeros$FamilyID[t] <- op.pair.zeros$FID[t]}
   }
 }
-
+op.done <- do.call(rbind, y)
 #Remove all rows for which FAMILYID is NA
-
+`%notin%` <- Negate(`%in%`)
 
