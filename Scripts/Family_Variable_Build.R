@@ -73,11 +73,11 @@ library(reshape2)
 load('sparrowABEL_QC.RData')
 sparrow.abel <- data1
 rm(data1)
-#id.sub <- sparrow.abel@phdata$id
-#id.sub <- as.numeric(id.sub)
-#which(op.pair$ANIMAL %in% id.sub)
-#op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
-#row.names(op.pair) <- NULL
+id.sub <- sparrow.abel@phdata$id
+id.sub <- as.numeric(id.sub)
+which(op.pair$ANIMAL %in% id.sub)
+op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
+row.names(op.pair) <- NULL
 ####
 ####
 ####

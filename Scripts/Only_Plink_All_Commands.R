@@ -24,4 +24,14 @@ system("plink --bfile test_mendelerrorssettomissing --recode 12 --autosome-num 3
 "plink --file Pdo_200k_n3960_21032017 --autosome-num 31 --maf 0.05 --check-sex --make-bed --out newplinksex"
 
 
+#checking paretnage; check mendelian errors per pair:
+
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
+
+imendel <- read.table("test_mendelfix.imendel", header = TRUE)
+fmendel <- read.table("test_mendelfix.fmendel", header = TRUE)
+
+length(which(as.numeric(imendel$N) > 10000))
+length(which(as.numeric(fmendel$N) > 10000))
+
 
