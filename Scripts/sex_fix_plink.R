@@ -9,15 +9,19 @@ read.table()
 #    plink --file Pdo_200k_n3960_21032017 --maf 0.05 --autosome-num 31 --make-bed --out newplink
 
 #2.       Read .fam into R
-  famfile <- read.table("newplink.fam")
-  names(famfile) <- c("Fam", "ID","Father", "Mother", "Sex", "Phenotype")
-  
-  ids <- 1:3960
+ #helgped is the correct pedigree
+ helgped <-   read.table("SNP_pedigree_Helgeland_05122017.txt", header = TRUE)
+ #Remove the false ind created by sequoia M & F ind
+ helgped <- helgped[1:3116,]
+ famfile <- helgped
+ names(famfile) <- c("ID", "Mother", "Father")
+ 
+  ids <- 1:length(famfile$ID)
   new.ids <- data.frame(1, famfile$ID, 1, ids)
-  names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID", rownames = FALSE)
+  names(new.ids) <- c("OldFam", "OldID", "NewFam", "NewID")
   new.ids$OldID <- as.character(new.ids$OldID)
   row.names(new.ids) <- NULL
-  write.table(new.ids, file = "ID-Recode-Key.txt", row.names = FALSE)
+  write.table(new.ids, file = "ID-Recode-Helgeland.txt", row.names = FALSE)
   head(new.ids)
   
   
@@ -62,14 +66,14 @@ read.table()
   idslist <- idslist[-3961]
   which(idslist == "0")
 
-  pedigree.new <- as.data.frame(1:3960)
+  pedigree.new <- as.data.frame(1:length(famfile$ID))
   names(pedigree.new)[1] <- "FamID"
   pedigree.new$FamID <- 1
-  pedigree.new$withinFamID <- 1:3960
+  pedigree.new$withinFamID <- 1:length(famfile$ID)
   pedigree.new$paternalID <- fatheridslist
   pedigree.new$maternalID <- motheridslist
   
-  write.table(pedigree.new, file = "updateParents.txt",sep=" ",row.names=FALSE, col.names = FALSE)
+  write.table(pedigree.new, file = "updateParents_Helgeland.txt",sep=" ",row.names=FALSE, col.names = FALSE)
   #Can now update parental ids
 #a.       Recode the IDs to numbers
 

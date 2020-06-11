@@ -4,7 +4,13 @@ rm(list=ls())
 library(GenABEL)
 library(crimaptools)
 setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/")
-setwd("C:/Users/johnb/Dropbox/PLINK-files 200k SNP-data/")
+setwd("C:/Users/s1945757/Dropbox/McAuley PhD - Data/Ped_Map_files/")
+sparrow.famped <- read.table("FamPed_20200414.txt", header = TRUE)
+load("sparrowgen.RData")
+sparrow.abel <- sparrowgen
+rm(sparrowgen)
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/crimap/crimap/")
+
 dir()
 
 load("sparrowgen_Helgeland_01_2018.RData")
@@ -54,7 +60,7 @@ library(crimaptools)
 #load("deer.RData")
 library(reshape2)
 
-op.pair <- read.table("updateParents.txt")
+op.pair <- read.table("updateParents_Helgeland.txt")
 row.names(op.pair) <- NULL
 op.pair <- as.data.frame(op.pair)
 names(op.pair) <- c("Fam","id","Father","Mother")
@@ -70,14 +76,14 @@ library(reshape2)
 
 #Fix the following code after QC's have been applied to the sparrow.abel file. This needs to be done 
 #because Crimap will get upset if the family pedigree contains IDs not in the gwaa.data object.
-load('sparrowABEL_QC.RData')
-sparrow.abel <- data1
-rm(data1)
-id.sub <- sparrow.abel@phdata$id
-id.sub <- as.numeric(id.sub)
-which(op.pair$ANIMAL %in% id.sub)
-op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
-row.names(op.pair) <- NULL
+#load('sparrowABEL_QC.RData')
+#sparrow.abel <- data1
+#rm(data1)
+#id.sub <- sparrow.abel@phdata$id
+#id.sub <- as.numeric(id.sub)
+#which(op.pair$ANIMAL %in% id.sub)
+#op.pair <- op.pair[which(op.pair$ANIMAL %in% id.sub),]
+#row.names(op.pair) <- NULL
 ####
 ####
 ####
@@ -373,7 +379,7 @@ for (i in 1:1474) {
 
 
 sparrow.famped <- rbind(sparrow.famped.ALL_Mothers,sparrow.famped.Fathers)
-write.table(sparrow.famped,file = "fam.ped_unabridged.txt", row.names = FALSE)
+write.table(sparrow.famped,file = "fam_Helgeland.ped.txt", row.names = FALSE)
 
 
 

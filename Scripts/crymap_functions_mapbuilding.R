@@ -1,4 +1,4 @@
-
+library(crimaptools)
 Crymap <- function(zzz) {
 create_crimap_input(gwaa.data = sparrow.abel, 
                     familyPedigree = sparrow.famped, 
@@ -45,8 +45,9 @@ run_crimap_chrompic(genfile = paste("crimap/chr",zzz,"a.gen", sep = ""), crimap.
 
 }
 
-
-setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/crimap")
+getwd()
+setwd("C:/Users/s1945757/Dropbox/McAuley PhD - Data/Ped_Map_files/crimap/")
+setwd("C:/Users/s1945757/PhD_Repo/PLINK-files 200k SNP-data/Dblxoversremoved/")
 
 Crymap(zzz= 9)
 Crymap(zzz= 10)
@@ -116,26 +117,29 @@ sparrow.cmpmap28 <- parse_map_chrompic(chrompicfile = ("crimap/chr28a.cmp"))
 sparrow.cmpmap30 <- parse_map_chrompic(chrompicfile = ("crimap/chr30a.cmp"))
 sparrow.cmpmap32 <- parse_map_chrompic(chrompicfile = ("crimap/chr32a.cmp"))
 
-sparrow.xovers9 <- parse_crossovers(chrompicfile = "crimap/chr9a.cmp", familyPedigree = sparrow.famped)
-sparrow.xovers9[1:2,]
+
 
 
 #Investigating double crossovers----
-sparrow.doubles9 <- check_double_crossovers(parsed.xovers = sparrow.xovers9)
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr10a.cmp", familyPedigree = sparrow.famped)
+
+
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers10)
 
 head(sparrow.doubles)
 
-physmap9 <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 9], 
-                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 9], 
-                      Order = 1:length(which(chromosome(sparrow.abel) == 9)), 
-                      analysisID = "9a")
-sparrow.doubles9 <- check_double_crossovers(parsed.xovers = sparrow.xovers9, physical.map = physmap9)
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 10], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 10], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 10)), 
+                      analysisID = "10a")
+sparrow.doubles10 <- check_double_crossovers(parsed.xovers = sparrow.xovers10, physical.map = physmap10)
 
 
-sparrow.remove <- subset(sparrow.doubles9, Singleton == "yes")
-saveRDS((revise_double_crossovers(parsed.xovers = sparrow.xovers9, removesections = sparrow.remove)), file = "sparrow_xovers_clean9.RData")
+sparrow.remove <- subset(sparrow.doubles10, Singleton == "yes")
+sparrow.xovers.clean10 <- revise_double_crossovers(parsed.xovers = sparrow.xovers10, removesections = sparrow.remove)
 
-sparrow.xovers.clean9
+
 
 
 
@@ -224,3 +228,493 @@ plot(sparrow.map30$Order,sparrow.map30$cMPosition.Male, xlab = "SNP Order", ylab
 plot(sparrow.map32$Order,sparrow.map32$cMPosition.Male, xlab = "SNP Order", ylab = "", main = "Chr 32",cex.main = .75)
 dev.off()
 
+
+
+#BP vs cM
+
+dev.new()
+par(mfrow=c(3,7))
+plot(sparrow.map9$BP,sparrow.map9$cMPosition, xlab = "", ylab = "cM SNP Pos", main = "Chr 9" , cex.main = .75)
+plot(sparrow.map10$BP,sparrow.map10$cMPosition, xlab = "", ylab = "", main = "Chr 10",cex.main = .75)
+plot(sparrow.map11$BP,sparrow.map11$cMPosition, xlab = "", ylab = "", main = "Chr 11",cex.main = .75)
+plot(sparrow.map12$BP,sparrow.map12$cMPosition, xlab = "", ylab = "", main = "Chr 12",cex.main = .75)
+plot(sparrow.map13$BP,sparrow.map13$cMPosition, xlab = "", ylab = "", main = "Chr 13",cex.main = .75)
+plot(sparrow.map14$BP,sparrow.map14$cMPosition, xlab = "", ylab = "", main = "Chr 14",cex.main = .75)
+plot(sparrow.map15$BP,sparrow.map15$cMPosition, xlab = "", ylab = "", main = "Chr 15",cex.main = .75)
+plot(sparrow.map17$BP,sparrow.map17$cMPosition, xlab = "", ylab = "cM SNP Pos", main = "Chr 17",cex.main = .75)
+plot(sparrow.map18$BP,sparrow.map18$cMPosition, xlab = "", ylab = "", main = "Chr 18",cex.main = .75)
+plot(sparrow.map19$BP,sparrow.map19$cMPosition, xlab = "", ylab = "", main = "Chr 19",cex.main = .75)
+plot(sparrow.map20$BP,sparrow.map20$cMPosition, xlab = "", ylab = "", main = "Chr 20",cex.main = .75)
+plot(sparrow.map21$BP,sparrow.map21$cMPosition, xlab = "", ylab = "", main = "Chr 21",cex.main = .75)
+plot(sparrow.map22$BP,sparrow.map22$cMPosition, xlab = "", ylab = "", main = "Chr 22",cex.main = .75)
+plot(sparrow.map23$BP,sparrow.map23$cMPosition, xlab = "", ylab = "", main = "Chr 23",cex.main = .75)
+plot(sparrow.map24$BP,sparrow.map24$cMPosition, xlab = "BP Pos", ylab = "cM SNP Pos", main = "Chr 24",cex.main = .75)
+plot(sparrow.map25$BP,sparrow.map25$cMPosition, xlab = "BP Pos", ylab = "", main = "Chr 25",cex.main = .75)
+plot(sparrow.map26$BP,sparrow.map26$cMPosition, xlab = "BP Pos", ylab = "", main = "Chr 26",cex.main = .75)
+plot(sparrow.map27$BP,sparrow.map27$cMPosition, xlab = "BP Pos", ylab = "", main = "Chr 27",cex.main = .75)
+plot(sparrow.map28$BP,sparrow.map28$cMPosition, xlab = "BP Pos", ylab = "", main = "Chr 28",cex.main = .75)
+plot(sparrow.map30$BP,sparrow.map30$cMPosition, xlab = "BP Pos", ylab = "", main = "Chr 30",cex.main = .75)
+plot(sparrow.map32$BP,sparrow.map32$cMPosition, xlab = "BP Pos", ylab = "", main = "Chr 32",cex.main = .75)
+dev.off()
+
+
+
+
+dev.new()
+par(mfrow=c(3,7))
+plot(sparrow.map9$Order,sparrow.map9$cMPosition, xlab = "", ylab = "cM SNP Pos", main = "Chr 9" , cex.main = .75)
+plot(sparrow.map10$Order,sparrow.map10$cMPosition, xlab = "", ylab = "", main = "Chr 10",cex.main = .75)
+plot(sparrow.map11$Order,sparrow.map11$cMPosition, xlab = "", ylab = "", main = "Chr 11",cex.main = .75)
+plot(sparrow.map12$Order,sparrow.map12$cMPosition, xlab = "", ylab = "", main = "Chr 12",cex.main = .75)
+plot(sparrow.map13$Order,sparrow.map13$cMPosition, xlab = "", ylab = "", main = "Chr 13",cex.main = .75)
+plot(sparrow.map14$Order,sparrow.map14$cMPosition, xlab = "", ylab = "", main = "Chr 14",cex.main = .75)
+plot(sparrow.map15$Order,sparrow.map15$cMPosition, xlab = "", ylab = "", main = "Chr 15",cex.main = .75)
+plot(sparrow.map17$Order,sparrow.map17$cMPosition, xlab = "", ylab = "cM SNP Pos", main = "Chr 17",cex.main = .75)
+plot(sparrow.map18$Order,sparrow.map18$cMPosition, xlab = "", ylab = "", main = "Chr 18",cex.main = .75)
+plot(sparrow.map19$Order,sparrow.map19$cMPosition, xlab = "", ylab = "", main = "Chr 19",cex.main = .75)
+plot(sparrow.map20$Order,sparrow.map20$cMPosition, xlab = "", ylab = "", main = "Chr 20",cex.main = .75)
+plot(sparrow.map21$Order,sparrow.map21$cMPosition, xlab = "", ylab = "", main = "Chr 21",cex.main = .75)
+plot(sparrow.map22$Order,sparrow.map22$cMPosition, xlab = "", ylab = "", main = "Chr 22",cex.main = .75)
+plot(sparrow.map23$Order,sparrow.map23$cMPosition, xlab = "", ylab = "", main = "Chr 23",cex.main = .75)
+plot(sparrow.map24$Order,sparrow.map24$cMPosition, xlab = "SNP Order", ylab = "cM SNP Pos", main = "Chr 24",cex.main = .75)
+plot(sparrow.map25$Order,sparrow.map25$cMPosition, xlab = "SNP Order", ylab = "", main = "Chr 25",cex.main = .75)
+plot(sparrow.map26$Order,sparrow.map26$cMPosition, xlab = "SNP Order", ylab = "", main = "Chr 26",cex.main = .75)
+plot(sparrow.map27$Order,sparrow.map27$cMPosition, xlab = "SNP Order", ylab = "", main = "Chr 27",cex.main = .75)
+plot(sparrow.map28$Order,sparrow.map28$cMPosition, xlab = "SNP Order", ylab = "", main = "Chr 28",cex.main = .75)
+plot(sparrow.map30$Order,sparrow.map30$cMPosition, xlab = "SNP Order", ylab = "", main = "Chr 30",cex.main = .75)
+plot(sparrow.map32$Order,sparrow.map32$cMPosition, xlab = "SNP Order", ylab = "", main = "Chr 32",cex.main = .75)
+dev.off()
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr9a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 9], 
+                        Position = map(sparrow.abel)[chromosome(sparrow.abel) == 9], 
+                        Order = 1:length(which(chromosome(sparrow.abel) == 9)), 
+                        analysisID = "9a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean9 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr10a.cmp", familyPedigree = sparrow.famped)
+
+
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+head(sparrow.doubles)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 10], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 10], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 10)), 
+                      analysisID = "10a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean10 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr11a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 11], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 11], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 11)), 
+                      analysisID = "11a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean11 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr12a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 12], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 12], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 12)), 
+                      analysisID = "12a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean12 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr13a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 13], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 13], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 13)), 
+                      analysisID = "13a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean13 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr14a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 14], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 14], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 14)), 
+                      analysisID = "14a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean14 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr15a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 15], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 15], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 15)), 
+                      analysisID = "15a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean15 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr17a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 17], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 17], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 17)), 
+                      analysisID = "17a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean17 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr18a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 18], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 18], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 18)), 
+                      analysisID = "18a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean18 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr19a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 19], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 19], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 19)), 
+                      analysisID = "19a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean19 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr20a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 20], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 20], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 20)), 
+                      analysisID = "20a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean20 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr21a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 21], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 21], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 21)), 
+                      analysisID = "21a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean21 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr22a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 22], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 22], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 22)), 
+                      analysisID = "22a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean22 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr23a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 23], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 23], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 23)), 
+                      analysisID = "23a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean23 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr24a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 24], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 24], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 24)), 
+                      analysisID = "24a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean24 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr25a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 25], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 25], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 25)), 
+                      analysisID = "25a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean25 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr26a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 26], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 26], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 26)), 
+                      analysisID = "26a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean26 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr27a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 27], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 27], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 27)), 
+                      analysisID = "27a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean27 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr28a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 28], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 28], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 28)), 
+                      analysisID = "28a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean28 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+
+sparrow.xovers <- parse_crossovers(chrompicfile = "crimap/chr30a.cmp", familyPedigree = sparrow.famped)
+
+#Investigating double crossovers----
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers)
+
+physmap <- data.frame(SNP.Name = snpnames(sparrow.abel)[chromosome(sparrow.abel) == 30], 
+                      Position = map(sparrow.abel)[chromosome(sparrow.abel) == 30], 
+                      Order = 1:length(which(chromosome(sparrow.abel) == 30)), 
+                      analysisID = "30a")
+sparrow.doubles <- check_double_crossovers(parsed.xovers = sparrow.xovers, physical.map = physmap)
+
+
+sparrow.remove <- subset(sparrow.doubles, Singleton == "yes")
+sparrow.xovers.clean30 <- revise_double_crossovers(parsed.xovers = sparrow.xovers, removesections = sparrow.remove)
+
+
+
+
+
+library(dplyr)
+
+RecombSum_Sm_Chrs <- bind_rows(sparrow.xovers.clean9,sparrow.xovers.clean10.RData,sparrow.xovers.clean11,
+          sparrow.xovers.clean12,sparrow.xovers.clean13, sparrow.xovers.clean14,
+          sparrow.xovers.clean15,sparrow.xovers.clean17,sparrow.xovers.clean18,
+          sparrow.xovers.clean19,sparrow.xovers.clean20,sparrow.xovers.clean21,
+          sparrow.xovers.clean22,sparrow.xovers.clean23,sparrow.xovers.clean24,sparrow.xovers.clean25,
+          sparrow.xovers.clean26,sparrow.xovers.clean27,sparrow.xovers.clean28) %>%
+  group_by(Family) %>%
+  summarise_at("RecombCount", sum)
+
+
+[18:23] JOHNSTON Susan
+
+
+RecombSum_Sm_Chrs <- bind_rows(sparrow.xovers.clean9,sparrow.xovers.clean10.RData,sparrow.xovers.clean11,
+                               sparrow.xovers.clean12,sparrow.xovers.clean13, sparrow.xovers.clean14,
+                               sparrow.xovers.clean15,sparrow.xovers.clean17,sparrow.xovers.clean18,
+                               sparrow.xovers.clean19,sparrow.xovers.clean20,sparrow.xovers.clean21,
+                               sparrow.xovers.clean22,sparrow.xovers.clean23,sparrow.xovers.clean24,sparrow.xovers.clean25,
+                               sparrow.xovers.clean26,sparrow.xovers.clean27,sparrow.xovers.clean28) %>%
+  group_by(Family) %>%
+  summarise(TotalRecombCount = sum(RecombCount))
+write.table(RecombSum_Sm_Chrs, file = "RecombSum_Sm_Chrs.txt",row.names = FALSE, col.names = TRUE)          
+            
+
+ 
+sparrow.xovers.sml.chrs <- bind_rows(sparrow.xovers.clean9,sparrow.xovers.clean10.RData,sparrow.xovers.clean11,
+          sparrow.xovers.clean12,sparrow.xovers.clean13, sparrow.xovers.clean14,
+          sparrow.xovers.clean15,sparrow.xovers.clean17,sparrow.xovers.clean18,
+          sparrow.xovers.clean19,sparrow.xovers.clean20,sparrow.xovers.clean21,
+          sparrow.xovers.clean22,sparrow.xovers.clean23,sparrow.xovers.clean24,sparrow.xovers.clean25,
+          sparrow.xovers.clean26,sparrow.xovers.clean27,sparrow.xovers.clean28)
+
+write.table(sparrow.xovers.sml.chrs, file = "xovers.sml.chrs.txt", row.names = FALSE, col.names = TRUE)
