@@ -604,7 +604,6 @@ ggplot() +
   ylab('cM Position.Female') +
   ggtitle('Chromosome 29: Chr length x Map Length')
 
-
 ggplot() +
   geom_point(data = sparrow.map1, aes(x = BP/1000000, y = cMPosition.Male)) +
   xlab('Chromosome length (Mb)') +

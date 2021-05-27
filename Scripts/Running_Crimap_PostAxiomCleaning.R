@@ -550,7 +550,7 @@ run_crimap_chrompic(genfile = "crimap/chr29b.gen", crimap.path =  "C:/PathApps/c
 ###
 
 setwd("C:/Users/s1945757/PhD_Repo/Crimap Outputs Post Axiom Cleaning")
-
+#setwd("C:/Users/s1945757/Dropbox/McAuley PhD - Data/Data/Crimap Runs/Final")
 
 #Set up file with BP
 map <- as.data.frame(sparrow.abel@gtdata@map)
@@ -591,7 +591,7 @@ sparrow.map1b <- merge(sparrow.map1b, map, by.x = "SNP.Name",by.y = "SNP.Name")
 sparrow.map1c <- merge(sparrow.map1c, map, by.x = "SNP.Name",by.y = "SNP.Name")
 #sparrow.map1d <- merge(sparrow.map1d, map, by.x = "SNP.Name",by.y = "SNP.Name")
 sparrow.map1 <- rbind(sparrow.map1a,sparrow.map1b,sparrow.map1c)
-sparrow.map1[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map1[,c(5,6,7,8,10,11)] <- NULL
 
 rm(sparrow.map1a)
 rm(sparrow.map1b)
@@ -650,7 +650,7 @@ sparrow.map2c <- merge(sparrow.map2c, map, by.x = "SNP.Name",by.y = "SNP.Name")
 #sparrow.map2f <- merge(sparrow.map2f, map, by.x = "SNP.Name",by.y = "SNP.Name")
 
 sparrow.map2 <- rbind(sparrow.map2a,sparrow.map2b,sparrow.map2c)
-sparrow.map2[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map2[,c(5,6,7,8,10,11)] <- NULL
 
 rm(sparrow.map2a)
 rm(sparrow.map2b)
@@ -705,7 +705,7 @@ sparrow.map3c <- merge(sparrow.map3c, map, by.x = "SNP.Name",by.y = "SNP.Name")
 #sparrow.map3e <- merge(sparrow.map3e, map, by.x = "SNP.Name",by.y = "SNP.Name")
 
 sparrow.map3 <- rbind(sparrow.map3a,sparrow.map3b,sparrow.map3c)
-sparrow.map3[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map3[,c(5,6,7,8,10,11)] <- NULL
 
 rm(sparrow.map3a)
 rm(sparrow.map3b)
@@ -748,7 +748,7 @@ sparrow.map4a <- merge(sparrow.map4a, map, by.x = "SNP.Name",by.y = "SNP.Name")
 sparrow.map4b <- merge(sparrow.map4b, map, by.x = "SNP.Name",by.y = "SNP.Name")
 #sparrow.map4c <- merge(sparrow.map4c, map, by.x = "SNP.Name",by.y = "SNP.Name")
 sparrow.map4 <- rbind(sparrow.map4a,sparrow.map4b)
-sparrow.map4[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map4[,c(5,6,7,8,10,11)] <- NULL
 
 rm(sparrow.map4a)
 rm(sparrow.map4b)
@@ -787,7 +787,7 @@ sparrow.map29a <- merge(sparrow.map29a, map, by.x = "SNP.Name",by.y = "SNP.Name"
 sparrow.map29b <- merge(sparrow.map29b, map, by.x = "SNP.Name",by.y = "SNP.Name")
 #sparrow.map29c <- merge(sparrow.map29c, map, by.x = "SNP.Name",by.y = "SNP.Name")
 sparrow.map29 <- rbind(sparrow.map29a,sparrow.map29b)
-sparrow.map29[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map29[,c(5,6,7,8,10,11)] <- NULL
 rm(sparrow.map29a)
 rm(sparrow.map29b)
 rm(sparrow.map29c)
@@ -796,117 +796,117 @@ rm(sparrow.map29c)
 #Ch 5
 sparrow.map5 <- parse_map(mapfile = "crimap/chr5a.map")
 sparrow.map5 <- merge(sparrow.map5, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map5[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map5[,c(5,6,7,8,10,11)] <- NULL
 
 #Ch 6
 sparrow.map6 <- parse_map(mapfile = "crimap/chr6a.map")
 sparrow.map6 <- merge(sparrow.map6, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map6[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map6[,c(5,6,7,8,10,11)] <- NULL
 
 #Ch 7
 sparrow.map7 <- parse_map(mapfile = "crimap/chr7a.map")
 sparrow.map7 <- merge(sparrow.map7, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map7[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map7[,c(5,6,7,8,10,11)] <- NULL
 
 #Ch 8
 sparrow.map8 <- parse_map(mapfile = "crimap/chr8a.map")
 sparrow.map8 <- merge(sparrow.map8, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map8[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map8[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 9
 sparrow.map9 <- parse_map(mapfile = "crimap/chr9a.map")
 sparrow.map9 <- merge(sparrow.map9, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map9[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map9[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 10
 sparrow.map10 <- parse_map(mapfile = "crimap/chr10a.map")
 sparrow.map10 <- merge(sparrow.map10, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map10[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map10[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 11
 sparrow.map11 <- parse_map(mapfile = "crimap/chr11a.map")
 sparrow.map11 <- merge(sparrow.map11, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map11[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map11[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 12
 sparrow.map12 <- parse_map(mapfile = "crimap/chr12a.map")
 sparrow.map12 <- merge(sparrow.map12, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map12[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map12[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 13
 sparrow.map13 <- parse_map(mapfile = "crimap/chr13a.map")
 sparrow.map13 <- merge(sparrow.map13, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map13[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map13[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 14
 sparrow.map14 <- parse_map(mapfile = "crimap/chr14a.map")
 sparrow.map14 <- merge(sparrow.map14, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map14[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map14[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 15
 sparrow.map15 <- parse_map(mapfile = "crimap/chr15a.map")
 sparrow.map15 <- merge(sparrow.map15, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map15[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map15[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 17
 sparrow.map17 <- parse_map(mapfile = "crimap/chr17a.map")
 sparrow.map17 <- merge(sparrow.map17, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map17[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map17[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 18
 sparrow.map18 <- parse_map(mapfile = "crimap/chr18a.map")
 sparrow.map18 <- merge(sparrow.map18, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map18[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map18[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 19
 sparrow.map19 <- parse_map(mapfile = "crimap/chr19a.map")
 sparrow.map19 <- merge(sparrow.map19, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map19[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map19[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 20
 sparrow.map20 <- parse_map(mapfile = "crimap/chr20a.map")
 sparrow.map20 <- merge(sparrow.map20, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map20[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map20[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 21
 sparrow.map21 <- parse_map(mapfile = "crimap/chr21a.map")
 sparrow.map21 <- merge(sparrow.map21, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map21[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map21[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 22
 sparrow.map22 <- parse_map(mapfile = "crimap/chr22a.map")
 sparrow.map22 <- merge(sparrow.map22, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map22[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map22[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 23
 sparrow.map23 <- parse_map(mapfile = "crimap/chr23a.map")
 sparrow.map23 <- merge(sparrow.map23, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map23[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map23[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 24
 sparrow.map24 <- parse_map(mapfile = "crimap/chr24a.map")
 sparrow.map24 <- merge(sparrow.map24, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map24[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map24[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 25
 sparrow.map25 <- parse_map(mapfile = "crimap/chr25a.map")
 sparrow.map25 <- merge(sparrow.map25, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map25[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map25[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 26
 sparrow.map26 <- parse_map(mapfile = "crimap/chr26a.map")
 sparrow.map26 <- merge(sparrow.map26, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map26[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map26[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 27
 sparrow.map27 <- parse_map(mapfile = "crimap/chr27a.map")
 sparrow.map27 <- merge(sparrow.map27, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map27[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map27[,c(5,6,7,8,10,11)] <- NULL
 
 #Chr 28
 sparrow.map28 <- parse_map(mapfile = "crimap/chr28a.map")
 sparrow.map28 <- merge(sparrow.map28, map, by.x = "SNP.Name",by.y = "SNP.Name")
-sparrow.map28[,c(5,6,7,8,10,11,12)] <- NULL
+sparrow.map28[,c(5,6,7,8,10,11)] <- NULL
 
 sparrow.map1$Chr <- "Chr 1"
 sparrow.map2$Chr <- "Chr 2"

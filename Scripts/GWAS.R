@@ -1,3 +1,4 @@
+rm(list = ls())
 #Load in libraries and data
 library(GenABEL)
 library(crimaptools)
@@ -5,91 +6,74 @@ library(dplyr)
 library(asreml)
 library(forcats)
 library(RepeatABEL)
-
-setwd("~/PhD/PhD_Repo/data")
-load("sparrowABEL.RData")
+setwd("C:/Users/s1945757/Dropbox/McAuley PhD - Data/Scripts/GWAS")
+source("rGLSadj.R")
 load("sparrowgen.RData")
-load("sparrow.xovers.clean.all.RData")
-Rcount_RRID <- all.xovers %>% group_by(RRID, Family) %>% summarise(ACC = sum(RecombCount))
-sparrow.abel <- add.phdata(sparrow.abel, Rcount_RRID, ACC)
-setwd("~/PhD/PhD_Repo/data")
-names(Rcount_RRID)[1] <- "id"
+load("sparrow.john.RData") #This is the data after sngltons removed, and InfCount < 5 removed. 
 load("sparrow.gkin.RData")
 
-#Mean_ACC <- aggregate(ACC ~ id, Rcount_RRID, mean)
-#sparrow.abel <- add.phdata(sparrow.abel, Mean_ACC)
-
-
-sparrow.gkin <- ibs(sparrowgen, weight = "freq")
-save(sparrow.gkin, file = "sparrow.gkin.RData")
-sparrow.dist <- as.dist(0.5 - sparrow.gkin)
-#sparrow.mds <- cmdscale(sparrow.dist)
-#save(sparrow.mds, file="sparrow.mds.RData")
-load("sparrow.mds.RData")
-
-#Mean_ACC <- aggregate(ACC ~ id, Rcount_RRID, mean)
-#sparrow.abel <- add.phdata(sparrow.abel, Mean_ACC)
-
-km <- kmeans(sparrow.mds, centers = 2, nstart =1000)
-cl1 <- names(which(km$cluster == 1))
-cl2 <- names(which(km$cluster == 2))
-
-qt <- qtscore(ACC,sparrow.abel)
-qt.kin <- egscore(ACC,sparrow.abel, kin = sparrow.gkin)
-qts.e <- qtscore(ACC ~ sex,data =sparrow.abel, times = 200)
-h2 <- polygenic(ACC, kin = sparrow.gkin, data = sparrow.abel)
-mms <- mmscore(h2, data = sparrow.abel)
-grs <- qtscore(h2$pgres, data = sparrow.abel, clambda = FALSE)
-grs.e <- qtscore(h2$pgres, data = sparrow.abel, times = 200, clam = FALSE)
-
-plot(an0)
-
-
-
-#RepeatABEL
-#Redue with original GenABEL object
-
-source("rGLSadj.R")
-
-
+#gkin setup
 sparrow.gkin.sym <- sparrow.gkin
 sparrow.gkin.sym[upper.tri(sparrow.gkin.sym)] = t(sparrow.gkin.sym)[upper.tri(sparrow.gkin.sym)]
 sparrow.gkin.sym <- sparrow.gkin.sym * 2
 
-Rcount_RRID$id <- as.character(Rcount_RRID$id)
-Rcount_RRID <- merge(Rcount_RRID, phdata, by = "id")
 
 
+#RepeatABEL on unaltered sparrowgen object
 system.time(gwasACC_prefit2 <- preFitModel(fixed = ACC ~ sex, 
                                             id.name = "id",
                                             genabel.data = sparrowgen,
-                                            phenotype.data = Rcount_RRID, 
+                                            phenotype.data = sparrow, 
                                             corStruc = list(id = list("GRM")),
                                             GRM = sparrow.gkin.sym))
-
-
-
-
 system.time(gwasACC2 <- rGLSadj(ACC ~ sex,
                                  genabel.data = sparrowgen,
-                                 phenotype.data = Rcount_RRID, 
+                                 phenotype.data = sparrow, 
                                  id = "id",
                                  V = gwasACC_prefit2$V,
                                  GRM=sparrow.gkin.sym))
 
 # The process_rGLSadj_results function will do the lambda correction for
 # population structure and also return the expected distribution of P-values.
-
 gwasACCres2 <- process_rGLSadj_results(gwasACC2, sparrowgen)
-
 head(gwasACCres)
-
 plot_rGLSadj_results(gwasACCres2)
 plot_rGLSadj_results(gwasACCres2, PP = TRUE)
 
 
 
 
-#gtca alternative option for GWAS?
 
 
+
+#Inspect sparrowgen object
+qc0snp <- summary.snp.data(sparrowgen@gtdata)
+hist(qc0snp$CallRate, breaks = 50)
+qc0id <- perid.summary(sparrowgen)
+hist(qc0id$CallPP, breaks = 50) 
+
+
+#Choose QC thresholds for check.marker() function based on histograms
+qc1 <- check.marker(sparrowgen, callrate = 0.9, perid.call = 0.8, p.level = 0)
+data1 <- sparrowgen[qc1$idok, qc1$snpok]
+
+#RepeatABEL 
+system.time(gwasACC_prefit2 <- preFitModel(fixed = ACC ~ sex, 
+                                           id.name = "id",
+                                           genabel.data = data1,
+                                           phenotype.data = sparrow, 
+                                           corStruc = list(id = list("GRM")),
+                                           GRM = sparrow.gkin.sym))
+system.time(gwasACC2 <- rGLSadj(ACC ~ sex,
+                                genabel.data = data1,
+                                phenotype.data = sparrow, 
+                                id = "id",
+                                V = gwasACC_prefit2$V,
+                                GRM=sparrow.gkin.sym))
+
+# The process_rGLSadj_results function will do the lambda correction for
+# population structure and also return the expected distribution of P-values.
+
+gwasACCres2 <- process_rGLSadj_results(gwasACC2, data1)
+head(gwasACCres2)
+plot_rGLSadj_results(gwasACCres2)
